@@ -1,0 +1,13 @@
+python-dotenv
+pydantic
+langchain-core
+langchain-groq
+langchain-chroma
+langchain-huggingface
+langchain-docling
+langchain-community
+langgraph
+langchain-openai
+sentence-transformers
+fastapi 
+uvicorn
