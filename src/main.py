@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from src.graph.builder import app_graph
+from langgraph.errors import GraphRecursionError
 import uvicorn 
 
 app = FastAPI()
@@ -18,10 +19,14 @@ class chat_bot(BaseModel):
 
 @app.post("/chat")
 async def chat(request:chat_bot):
-    config = {"configurable":{"thread_id":request.thread_id}}
-    res = app_graph.invoke({"question":request.chat},config=config)
-    return{
-        "res":res["answer"] }
+    try:
+        config = {"configurable":{"thread_id":request.thread_id},"recursion_limit": 3}
+        res = app_graph.invoke({"question":request.chat},config=config)
+        return{
+            "res":res["answer"]}
+    except Exception:
+        return{"res": "I am having trouble finding the exact policy details right now. Please hold while I connect you to human support."}
+
 
 if __name__ == "__main__":
     uvicorn.run("src.main:app",host="0.0.0.0",port=7860,reload=True)
