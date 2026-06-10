@@ -20,7 +20,7 @@ class chat_bot(BaseModel):
 @app.post("/chat")
 async def chat(request:chat_bot):
     try:
-        config = {"configurable":{"thread_id":request.thread_id},"recursion_limit": 3}
+        config = {"configurable":{"thread_id":request.thread_id},"recursion_limit": 15}
         res = app_graph.invoke({"question":request.chat},config=config)
         return{
             "res":res["answer"]}
