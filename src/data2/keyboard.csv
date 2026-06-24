@@ -1,0 +1,51 @@
+id,brand,model,switch_type,backlight,connection,price_inr,segment
+KB01,Logitech,K120,Membrane,None,Wired USB-A,499,Budget
+KB02,Dell,KB216,Membrane,None,Wired USB-A,599,Budget
+KB03,Zebronics,Zeb-K2100,Membrane,None,Wired USB-A,549,Budget
+KB04,HyperX,Alloy Core RGB,Membrane,RGB,Wired USB-A,2799,Budget-Mid
+KB05,Ant Esports,MK1000,Mechanical (Blue switch),RGB,Wired USB-A,1499,Mid
+KB06,Redgear,Shadow Blade,Mechanical (Blue switch),RGB,Wired USB-A,1799,Mid
+KB07,Cosmic Byte,CB-GK-16,Mechanical (Blue switch),RGB,Wired USB-A,1899,Mid
+KB08,Redragon,Kumara K552,Mechanical (Red/Blue switch),Red LED,Wired USB-A,2199,Mid
+KB09,Logitech,G413 SE,Mechanical (Tactile),White LED,Wired USB-A,5499,High
+KB10,Logitech,Model 1,Membrane,None,Wired USB-A,499,Budget
+KB11,Dell,Model 2,Mechanical (Blue switch),RGB,Wired USB-C,999,Budget-Mid
+KB12,Zebronics,Model 3,Mechanical (Red/Blue switch),White LED,Wireless 2.4GHz,1499,Mid
+KB13,HyperX,Model 4,Mechanical (Brown switch),Red LED,Wired USB-A,1999,Mid-High
+KB14,Ant Esports,Model 5,Mechanical (Red switch),Multi-color,Wired USB-C,2499,High
+KB15,Redgear,Model 6,Membrane,None,Wireless 2.4GHz,2999,Budget
+KB16,Cosmic Byte,Model 7,Mechanical (Blue switch),RGB,Wired USB-A,3499,Budget-Mid
+KB17,Redragon,Model 8,Mechanical (Red/Blue switch),White LED,Wired USB-C,3999,Mid
+KB18,SteelSeries,Model 9,Mechanical (Brown switch),Red LED,Wireless 2.4GHz,4499,Mid-High
+KB19,Corsair,Model 10,Mechanical (Red switch),Multi-color,Wired USB-A,4999,High
+KB20,Logitech,Model 11,Membrane,None,Wired USB-C,5499,Budget
+KB21,Dell,Model 12,Mechanical (Blue switch),RGB,Wireless 2.4GHz,5999,Budget-Mid
+KB22,Zebronics,Model 13,Mechanical (Red/Blue switch),White LED,Wired USB-A,6499,Mid
+KB23,HyperX,Model 14,Mechanical (Brown switch),Red LED,Wired USB-C,6999,Mid-High
+KB24,Ant Esports,Model 15,Mechanical (Red switch),Multi-color,Wireless 2.4GHz,7499,High
+KB25,Redgear,Model 16,Membrane,None,Wired USB-A,7999,Budget
+KB26,Cosmic Byte,Model 17,Mechanical (Blue switch),RGB,Wired USB-C,8499,Budget-Mid
+KB27,Redragon,Model 18,Mechanical (Red/Blue switch),White LED,Wireless 2.4GHz,8999,Mid
+KB28,SteelSeries,Model 19,Mechanical (Brown switch),Red LED,Wired USB-A,9499,Mid-High
+KB29,Corsair,Model 20,Mechanical (Red switch),Multi-color,Wired USB-C,9999,High
+KB30,Logitech,Model 21,Membrane,None,Wireless 2.4GHz,499,Budget
+KB31,Dell,Model 22,Mechanical (Blue switch),RGB,Wired USB-A,999,Budget-Mid
+KB32,Zebronics,Model 23,Mechanical (Red/Blue switch),White LED,Wired USB-C,1499,Mid
+KB33,HyperX,Model 24,Mechanical (Brown switch),Red LED,Wireless 2.4GHz,1999,Mid-High
+KB34,Ant Esports,Model 25,Mechanical (Red switch),Multi-color,Wired USB-A,2499,High
+KB35,Redgear,Model 26,Membrane,None,Wired USB-C,2999,Budget
+KB36,Cosmic Byte,Model 27,Mechanical (Blue switch),RGB,Wireless 2.4GHz,3499,Budget-Mid
+KB37,Redragon,Model 28,Mechanical (Red/Blue switch),White LED,Wired USB-A,3999,Mid
+KB38,SteelSeries,Model 29,Mechanical (Brown switch),Red LED,Wired USB-C,4499,Mid-High
+KB39,Corsair,Model 30,Mechanical (Red switch),Multi-color,Wireless 2.4GHz,4999,High
+KB40,Logitech,Model 31,Membrane,None,Wired USB-A,5499,Budget
+KB41,Dell,Model 32,Mechanical (Blue switch),RGB,Wired USB-C,5999,Budget-Mid
+KB42,Zebronics,Model 33,Mechanical (Red/Blue switch),White LED,Wireless 2.4GHz,6499,Mid
+KB43,HyperX,Model 34,Mechanical (Brown switch),Red LED,Wired USB-A,6999,Mid-High
+KB44,Ant Esports,Model 35,Mechanical (Red switch),Multi-color,Wired USB-C,7499,High
+KB45,Redgear,Model 36,Membrane,None,Wireless 2.4GHz,7999,Budget
+KB46,Cosmic Byte,Model 37,Mechanical (Blue switch),RGB,Wired USB-A,8499,Budget-Mid
+KB47,Redragon,Model 38,Mechanical (Red/Blue switch),White LED,Wired USB-C,8999,Mid
+KB48,SteelSeries,Model 39,Mechanical (Brown switch),Red LED,Wireless 2.4GHz,9499,Mid-High
+KB49,Corsair,Model 40,Mechanical (Red switch),Multi-color,Wired USB-A,9999,High
+KB50,Logitech,Model 41,Membrane,None,Wired USB-C,499,Budget

@@ -1,0 +1,51 @@
+id,brand,model,form_factor_support,included_fans,side_panel,price_inr,segment
+CAB01,Ant Esports,ICE-100 Mid Tower,ATX/Micro-ATX,1,Tempered Glass,2199,Budget
+CAB02,Deepcool,MATREXX 40,ATX/Micro-ATX,1,Tempered Glass,2799,Budget-Mid
+CAB03,Ant Esports,Crystal ICE-200TG,ATX/Micro-ATX,2,Tempered Glass,3499,Mid
+CAB04,Cooler Master,MasterBox Q300L,Micro-ATX,1,Acrylic,4199,Mid
+CAB05,Lian Li,Lancool 205,ATX/Micro-ATX,2,Tempered Glass,5499,Mid-High
+CAB06,NZXT,H510,ATX/Micro-ATX,2,Tempered Glass,6499,High
+CAB07,Corsair,4000D Airflow,ATX/Micro-ATX,2,Tempered Glass,8499,High
+CAB08,Ant Esports,ICE-100 Mid Tower,ATX/Micro-ATX,1,Tempered Glass,2199,Budget
+CAB09,Deepcool,MATREXX 40,Micro-ATX,2,Acrylic,2699,Budget-Mid
+CAB10,Cooler Master,Crystal ICE-200TG,ATX,3,Steel,3199,Mid
+CAB11,Lian Li,MasterBox Q300L,ATX/Mini-ITX,4,Tempered Glass,3699,Mid-High
+CAB12,NZXT,Lancool 205,ATX/Micro-ATX,1,Acrylic,4199,High
+CAB13,Corsair,H510,Micro-ATX,2,Steel,4699,Budget
+CAB14,Fractal Design,4000D Airflow,ATX,3,Tempered Glass,5199,Budget-Mid
+CAB15,Thermaltake,Core 1000,ATX/Mini-ITX,4,Acrylic,5699,Mid
+CAB16,be quiet!,Pure Base 500DX,ATX/Micro-ATX,1,Steel,6199,Mid-High
+CAB17,Corsair,Lian Li Lancool 216,Micro-ATX,2,Tempered Glass,6699,High
+CAB18,Ant Esports,ICE-100 Mid Tower,ATX,3,Acrylic,7199,Budget
+CAB19,Deepcool,MATREXX 40,ATX/Mini-ITX,4,Steel,7699,Budget-Mid
+CAB20,Cooler Master,Crystal ICE-200TG,ATX/Micro-ATX,1,Tempered Glass,8199,Mid
+CAB21,Lian Li,MasterBox Q300L,Micro-ATX,2,Acrylic,8699,Mid-High
+CAB22,NZXT,Lancool 205,ATX,3,Steel,9199,High
+CAB23,Corsair,H510,ATX/Mini-ITX,4,Tempered Glass,9699,Budget
+CAB24,Fractal Design,4000D Airflow,ATX/Micro-ATX,1,Acrylic,10199,Budget-Mid
+CAB25,Thermaltake,Core 1000,Micro-ATX,2,Steel,10699,Mid
+CAB26,be quiet!,Pure Base 500DX,ATX,3,Tempered Glass,11199,Mid-High
+CAB27,Corsair,Lian Li Lancool 216,ATX/Mini-ITX,4,Acrylic,11699,High
+CAB28,Ant Esports,ICE-100 Mid Tower,ATX/Micro-ATX,1,Steel,2199,Budget
+CAB29,Deepcool,MATREXX 40,Micro-ATX,2,Tempered Glass,2699,Budget-Mid
+CAB30,Cooler Master,Crystal ICE-200TG,ATX,3,Acrylic,3199,Mid
+CAB31,Lian Li,MasterBox Q300L,ATX/Mini-ITX,4,Steel,3699,Mid-High
+CAB32,NZXT,Lancool 205,ATX/Micro-ATX,1,Tempered Glass,4199,High
+CAB33,Corsair,H510,Micro-ATX,2,Acrylic,4699,Budget
+CAB34,Fractal Design,4000D Airflow,ATX,3,Steel,5199,Budget-Mid
+CAB35,Thermaltake,Core 1000,ATX/Mini-ITX,4,Tempered Glass,5699,Mid
+CAB36,be quiet!,Pure Base 500DX,ATX/Micro-ATX,1,Acrylic,6199,Mid-High
+CAB37,Corsair,Lian Li Lancool 216,Micro-ATX,2,Steel,6699,High
+CAB38,Ant Esports,ICE-100 Mid Tower,ATX,3,Tempered Glass,7199,Budget
+CAB39,Deepcool,MATREXX 40,ATX/Mini-ITX,4,Acrylic,7699,Budget-Mid
+CAB40,Cooler Master,Crystal ICE-200TG,ATX/Micro-ATX,1,Steel,8199,Mid
+CAB41,Lian Li,MasterBox Q300L,Micro-ATX,2,Tempered Glass,8699,Mid-High
+CAB42,NZXT,Lancool 205,ATX,3,Acrylic,9199,High
+CAB43,Corsair,H510,ATX/Mini-ITX,4,Steel,9699,Budget
+CAB44,Fractal Design,4000D Airflow,ATX/Micro-ATX,1,Tempered Glass,10199,Budget-Mid
+CAB45,Thermaltake,Core 1000,Micro-ATX,2,Acrylic,10699,Mid
+CAB46,be quiet!,Pure Base 500DX,ATX,3,Steel,11199,Mid-High
+CAB47,Corsair,Lian Li Lancool 216,ATX/Mini-ITX,4,Tempered Glass,11699,High
+CAB48,Ant Esports,ICE-100 Mid Tower,ATX/Micro-ATX,1,Acrylic,2199,Budget
+CAB49,Deepcool,MATREXX 40,Micro-ATX,2,Steel,2699,Budget-Mid
+CAB50,Cooler Master,Crystal ICE-200TG,ATX,3,Tempered Glass,3199,Mid

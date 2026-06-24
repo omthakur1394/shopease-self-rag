@@ -1,0 +1,51 @@
+id,brand,model,cores_threads,boost_clock,igpu,socket,ram_supported,tdp_w,price_inr,segment
+CPU01,Intel,Core i3-12100F,4 cores / 8 threads,4.3GHz,No iGPU,LGA1700,DDR4/DDR5 (board dependent),58,6999,Budget
+CPU02,Intel,Core i3-13100F,4 cores / 8 threads,4.5GHz,No iGPU,LGA1700,DDR4/DDR5 (board dependent),58,8499,Budget
+CPU03,AMD,Ryzen 5 5600,6 cores / 12 threads,4.4GHz,No iGPU,AM4,DDR4,65,10999,Budget-Mid
+CPU04,AMD,Ryzen 5 5600G,6 cores / 12 threads,4.4GHz,Radeon Vega 7 iGPU,AM4,DDR4,65,12499,Budget-Mid
+CPU05,Intel,Core i5-12400F,6 cores / 12 threads,4.4GHz,No iGPU,LGA1700,DDR4/DDR5 (board dependent),65,11999,Mid
+CPU06,Intel,Core i5-13400F,10 cores / 16 threads,4.6GHz,No iGPU,LGA1700,DDR4/DDR5 (board dependent),65,14999,Mid
+CPU07,AMD,Ryzen 5 7600,6 cores / 12 threads,5.1GHz,Radeon iGPU,AM5,DDR5,65,16999,Mid-High
+CPU08,AMD,Ryzen 7 5700X,8 cores / 16 threads,4.6GHz,No iGPU,AM4,DDR4,65,15999,Mid-High
+CPU09,Intel,Core i7-12700F,12 cores / 20 threads,4.9GHz,No iGPU,LGA1700,DDR4/DDR5 (board dependent),65,21999,High
+CPU10,AMD,Ryzen 7 7700,8 cores / 16 threads,5.3GHz,Radeon iGPU,AM5,DDR5,65,26999,High
+CPU11,Intel,Core i3-12100F,4 cores / 8 threads,4.3GHz,No iGPU,LGA1700,DDR4,58,6999,Budget
+CPU12,AMD,Ryzen 5 5600G,6 cores / 12 threads,4.5GHz,Radeon Vega 7 iGPU,AM4,DDR5,65,9999,Budget-Mid
+CPU13,Intel,Core i5-12400F,8 cores / 16 threads,4.6GHz,Radeon iGPU,LGA1700,DDR4/DDR5 (board dependent),75,12999,Mid
+CPU14,AMD,Ryzen 7 5700X,12 cores / 20 threads,4.9GHz,UHD 770 iGPU,LGA1700,DDR4,105,15999,Mid-High
+CPU15,Intel,Core i7-12700F,16 cores / 32 threads,5.1GHz,No iGPU,LGA1700,DDR5,120,18999,High
+CPU16,AMD,Ryzen 9 5950X,4 cores / 8 threads,5.3GHz,Radeon Vega 7 iGPU,AM5,DDR4/DDR5 (board dependent),58,21999,Premium
+CPU17,Intel,Core i9-13900F,6 cores / 12 threads,5.6GHz,Radeon iGPU,LGA1700,DDR4,65,24999,Budget
+CPU18,AMD,Ryzen 5 5600,8 cores / 16 threads,4.3GHz,UHD 770 iGPU,AM4,DDR5,75,27999,Budget-Mid
+CPU19,Intel,Core i3-13100F,12 cores / 20 threads,4.5GHz,No iGPU,LGA1700,DDR4/DDR5 (board dependent),105,30999,Mid
+CPU20,AMD,Ryzen 5 7600,16 cores / 32 threads,4.6GHz,Radeon Vega 7 iGPU,LGA1700,DDR4,120,33999,Mid-High
+CPU21,Intel,Core i5-13400F,4 cores / 8 threads,4.9GHz,Radeon iGPU,LGA1700,DDR5,58,36999,High
+CPU22,AMD,Ryzen 7 7700,6 cores / 12 threads,5.1GHz,UHD 770 iGPU,AM5,DDR4/DDR5 (board dependent),65,39999,Premium
+CPU23,Intel,Core i7-13700F,8 cores / 16 threads,5.3GHz,No iGPU,LGA1700,DDR4,75,42999,Budget
+CPU24,AMD,Ryzen 9 7900X,12 cores / 20 threads,5.6GHz,Radeon Vega 7 iGPU,AM4,DDR5,105,45999,Budget-Mid
+CPU25,Intel,Core i3-12100F,16 cores / 32 threads,4.3GHz,Radeon iGPU,LGA1700,DDR4/DDR5 (board dependent),120,48999,Mid
+CPU26,AMD,Ryzen 5 5600G,4 cores / 8 threads,4.5GHz,UHD 770 iGPU,LGA1700,DDR4,58,51999,Mid-High
+CPU27,Intel,Core i5-12400F,6 cores / 12 threads,4.6GHz,No iGPU,LGA1700,DDR5,65,54999,High
+CPU28,AMD,Ryzen 7 5700X,8 cores / 16 threads,4.9GHz,Radeon Vega 7 iGPU,AM5,DDR4/DDR5 (board dependent),75,57999,Premium
+CPU29,Intel,Core i7-12700F,12 cores / 20 threads,5.1GHz,Radeon iGPU,LGA1700,DDR4,105,60999,Budget
+CPU30,AMD,Ryzen 9 5950X,16 cores / 32 threads,5.3GHz,UHD 770 iGPU,AM4,DDR5,120,63999,Budget-Mid
+CPU31,Intel,Core i9-13900F,4 cores / 8 threads,5.6GHz,No iGPU,LGA1700,DDR4/DDR5 (board dependent),58,66999,Mid
+CPU32,AMD,Ryzen 5 5600,6 cores / 12 threads,4.3GHz,Radeon Vega 7 iGPU,LGA1700,DDR4,65,69999,Mid-High
+CPU33,Intel,Core i3-13100F,8 cores / 16 threads,4.5GHz,Radeon iGPU,LGA1700,DDR5,75,72999,High
+CPU34,AMD,Ryzen 5 7600,12 cores / 20 threads,4.6GHz,UHD 770 iGPU,AM5,DDR4/DDR5 (board dependent),105,75999,Premium
+CPU35,Intel,Core i5-13400F,16 cores / 32 threads,4.9GHz,No iGPU,LGA1700,DDR4,120,78999,Budget
+CPU36,AMD,Ryzen 7 7700,4 cores / 8 threads,5.1GHz,Radeon Vega 7 iGPU,AM4,DDR5,58,6999,Budget-Mid
+CPU37,Intel,Core i7-13700F,6 cores / 12 threads,5.3GHz,Radeon iGPU,LGA1700,DDR4/DDR5 (board dependent),65,9999,Mid
+CPU38,AMD,Ryzen 9 7900X,8 cores / 16 threads,5.6GHz,UHD 770 iGPU,LGA1700,DDR4,75,12999,Mid-High
+CPU39,Intel,Core i3-12100F,12 cores / 20 threads,4.3GHz,No iGPU,LGA1700,DDR5,105,15999,High
+CPU40,AMD,Ryzen 5 5600G,16 cores / 32 threads,4.5GHz,Radeon Vega 7 iGPU,AM5,DDR4/DDR5 (board dependent),120,18999,Premium
+CPU41,Intel,Core i5-12400F,4 cores / 8 threads,4.6GHz,Radeon iGPU,LGA1700,DDR4,58,21999,Budget
+CPU42,AMD,Ryzen 7 5700X,6 cores / 12 threads,4.9GHz,UHD 770 iGPU,AM4,DDR5,65,24999,Budget-Mid
+CPU43,Intel,Core i7-12700F,8 cores / 16 threads,5.1GHz,No iGPU,LGA1700,DDR4/DDR5 (board dependent),75,27999,Mid
+CPU44,AMD,Ryzen 9 5950X,12 cores / 20 threads,5.3GHz,Radeon Vega 7 iGPU,LGA1700,DDR4,105,30999,Mid-High
+CPU45,Intel,Core i9-13900F,16 cores / 32 threads,5.6GHz,Radeon iGPU,LGA1700,DDR5,120,33999,High
+CPU46,AMD,Ryzen 5 5600,4 cores / 8 threads,4.3GHz,UHD 770 iGPU,AM5,DDR4/DDR5 (board dependent),58,36999,Premium
+CPU47,Intel,Core i3-13100F,6 cores / 12 threads,4.5GHz,No iGPU,LGA1700,DDR4,65,39999,Budget
+CPU48,AMD,Ryzen 5 7600,8 cores / 16 threads,4.6GHz,Radeon Vega 7 iGPU,AM4,DDR5,75,42999,Budget-Mid
+CPU49,Intel,Core i5-13400F,12 cores / 20 threads,4.9GHz,Radeon iGPU,LGA1700,DDR4/DDR5 (board dependent),105,45999,Mid
+CPU50,AMD,Ryzen 7 7700,16 cores / 32 threads,5.1GHz,UHD 770 iGPU,LGA1700,DDR4,120,48999,Mid-High

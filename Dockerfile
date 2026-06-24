@@ -7,7 +7,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN mkdir -p /app/chroma_db && chmod -R 777 /app/chroma_db
+RUN mkdir -p /app/chroma_db && chmod -R 777 /app/chroma_db2
 
 EXPOSE 7860
 

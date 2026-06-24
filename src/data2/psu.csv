@@ -1,0 +1,51 @@
+id,brand,model,wattage,efficiency_rating,modular,price_inr,segment
+PSU01,Ant Esports,VS500L,500,None (no 80+ cert),No,2199,Budget
+PSU02,DeepCool,PF600,600,80+ White,No,3199,Budget-Mid
+PSU03,Corsair,CV550,550,80+ Bronze,No,3799,Mid
+PSU04,Cooler Master,MWE 650 Bronze V2,650,80+ Bronze,No,4799,Mid
+PSU05,MSI,MAG A650BN,650,80+ Bronze,No,5199,Mid-High
+PSU06,Antec,NeoECO 650,650,80+ Gold,Semi,6499,High
+PSU07,Corsair,RM750e,750,80+ Gold,Yes (Full),8499,High
+PSU08,Ant Esports,Model 1,500,None (no 80+ cert),No,2199,Budget
+PSU09,DeepCool,Model 2,550,80+ White,Semi,2999,Budget-Mid
+PSU10,Corsair,Model 3,650,80+ Bronze,Yes (Full),3799,Mid
+PSU11,Cooler Master,Model 4,750,80+ Gold,No,4599,Mid-High
+PSU12,MSI,Model 5,850,80+ Platinum,Semi,5399,High
+PSU13,Antec,Model 6,1000,None (no 80+ cert),Yes (Full),6199,Budget
+PSU14,Seasonic,Model 7,500,80+ White,No,6999,Budget-Mid
+PSU15,Thermaltake,Model 8,550,80+ Bronze,Semi,7799,Mid
+PSU16,EVGA,Model 9,650,80+ Gold,Yes (Full),8599,Mid-High
+PSU17,Ant Esports,Model 10,750,80+ Platinum,No,9399,High
+PSU18,DeepCool,Model 11,850,None (no 80+ cert),Semi,10199,Budget
+PSU19,Corsair,Model 12,1000,80+ White,Yes (Full),10999,Budget-Mid
+PSU20,Cooler Master,Model 13,500,80+ Bronze,No,11799,Mid
+PSU21,MSI,Model 14,550,80+ Gold,Semi,12599,Mid-High
+PSU22,Antec,Model 15,650,80+ Platinum,Yes (Full),13399,High
+PSU23,Seasonic,Model 16,750,None (no 80+ cert),No,14199,Budget
+PSU24,Thermaltake,Model 17,850,80+ White,Semi,14999,Budget-Mid
+PSU25,EVGA,Model 18,1000,80+ Bronze,Yes (Full),2199,Mid
+PSU26,Ant Esports,Model 19,500,80+ Gold,No,2999,Mid-High
+PSU27,DeepCool,Model 20,550,80+ Platinum,Semi,3799,High
+PSU28,Corsair,Model 21,650,None (no 80+ cert),Yes (Full),4599,Budget
+PSU29,Cooler Master,Model 22,750,80+ White,No,5399,Budget-Mid
+PSU30,MSI,Model 23,850,80+ Bronze,Semi,6199,Mid
+PSU31,Antec,Model 24,1000,80+ Gold,Yes (Full),6999,Mid-High
+PSU32,Seasonic,Model 25,500,80+ Platinum,No,7799,High
+PSU33,Thermaltake,Model 26,550,None (no 80+ cert),Semi,8599,Budget
+PSU34,EVGA,Model 27,650,80+ White,Yes (Full),9399,Budget-Mid
+PSU35,Ant Esports,Model 28,750,80+ Bronze,No,10199,Mid
+PSU36,DeepCool,Model 29,850,80+ Gold,Semi,10999,Mid-High
+PSU37,Corsair,Model 30,1000,80+ Platinum,Yes (Full),11799,High
+PSU38,Cooler Master,Model 31,500,None (no 80+ cert),No,12599,Budget
+PSU39,MSI,Model 32,550,80+ White,Semi,13399,Budget-Mid
+PSU40,Antec,Model 33,650,80+ Bronze,Yes (Full),14199,Mid
+PSU41,Seasonic,Model 34,750,80+ Gold,No,14999,Mid-High
+PSU42,Thermaltake,Model 35,850,80+ Platinum,Semi,2199,High
+PSU43,EVGA,Model 36,1000,None (no 80+ cert),Yes (Full),2999,Budget
+PSU44,Ant Esports,Model 37,500,80+ White,No,3799,Budget-Mid
+PSU45,DeepCool,Model 38,550,80+ Bronze,Semi,4599,Mid
+PSU46,Corsair,Model 39,650,80+ Gold,Yes (Full),5399,Mid-High
+PSU47,Cooler Master,Model 40,750,80+ Platinum,No,6199,High
+PSU48,MSI,Model 41,850,None (no 80+ cert),Semi,6999,Budget
+PSU49,Antec,Model 42,1000,80+ White,Yes (Full),7799,Budget-Mid
+PSU50,Seasonic,Model 43,500,80+ Bronze,No,8599,Mid

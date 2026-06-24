@@ -1,0 +1,51 @@
+id,brand,model,type,sockets_supported,price_inr,segment
+COOL01,(Bundled with CPU),Stock Cooler,Air (single tower),AM4/AM5/LGA1700 (varies),0,Budget
+COOL02,Deepcool,Gammaxx 400,Air (single tower),AM4/AM5/LGA1700 (with bracket),2199,Budget-Mid
+COOL03,Cooler Master,Hyper 212 Halo,Air (single tower),AM4/AM5/LGA1700 (with bracket),2999,Mid
+COOL04,Deepcool,AS500,"Air (dual tower, ARGB)",AM4/AM5/LGA1700 (with bracket),3799,Mid
+COOL05,Cooler Master,MasterLiquid ML240L,AIO Liquid (240mm),AM4/AM5/LGA1700 (with bracket),6499,Mid-High
+COOL06,Corsair,iCUE H100i RGB,AIO Liquid (240mm),AM4/AM5/LGA1700 (with bracket),9499,High
+COOL07,Stock Cooler,Stock,Air (single tower),AM4/AM5/LGA1700 (varies),0,Budget
+COOL08,Deepcool,Gammaxx 400,"Air (dual tower, ARGB)",AM4/AM5/LGA1700 (with bracket),2199,Budget-Mid
+COOL09,Cooler Master,Hyper 212,AIO Liquid (240mm),All universal mounts,2999,Mid
+COOL10,Arctic,Freezer 34,AIO Liquid (280mm),AM4/AM5/LGA1700 (varies),3799,Mid-High
+COOL11,Corsair,ML240L,AIO Liquid (360mm),AM4/AM5/LGA1700 (with bracket),4999,High
+COOL12,Noctua,NH-D15,Air (single tower),All universal mounts,6499,Budget
+COOL13,be quiet!,Pure Rock,"Air (dual tower, ARGB)",AM4/AM5/LGA1700 (varies),7999,Budget-Mid
+COOL14,NZXT,Kraken X63,AIO Liquid (240mm),AM4/AM5/LGA1700 (with bracket),9499,Mid
+COOL15,Stock Cooler,Stock,AIO Liquid (280mm),All universal mounts,12999,Mid-High
+COOL16,Deepcool,Gammaxx 400,AIO Liquid (360mm),AM4/AM5/LGA1700 (varies),0,High
+COOL17,Cooler Master,Hyper 212,Air (single tower),AM4/AM5/LGA1700 (with bracket),2199,Budget
+COOL18,Arctic,Freezer 34,"Air (dual tower, ARGB)",All universal mounts,2999,Budget-Mid
+COOL19,Corsair,ML240L,AIO Liquid (240mm),AM4/AM5/LGA1700 (varies),3799,Mid
+COOL20,Noctua,NH-D15,AIO Liquid (280mm),AM4/AM5/LGA1700 (with bracket),4999,Mid-High
+COOL21,be quiet!,Pure Rock,AIO Liquid (360mm),All universal mounts,6499,High
+COOL22,NZXT,Kraken X63,Air (single tower),AM4/AM5/LGA1700 (varies),7999,Budget
+COOL23,Stock Cooler,Stock,"Air (dual tower, ARGB)",AM4/AM5/LGA1700 (with bracket),9499,Budget-Mid
+COOL24,Deepcool,Gammaxx 400,AIO Liquid (240mm),All universal mounts,12999,Mid
+COOL25,Cooler Master,Hyper 212,AIO Liquid (280mm),AM4/AM5/LGA1700 (varies),0,Mid-High
+COOL26,Arctic,Freezer 34,AIO Liquid (360mm),AM4/AM5/LGA1700 (with bracket),2199,High
+COOL27,Corsair,ML240L,Air (single tower),All universal mounts,2999,Budget
+COOL28,Noctua,NH-D15,"Air (dual tower, ARGB)",AM4/AM5/LGA1700 (varies),3799,Budget-Mid
+COOL29,be quiet!,Pure Rock,AIO Liquid (240mm),AM4/AM5/LGA1700 (with bracket),4999,Mid
+COOL30,NZXT,Kraken X63,AIO Liquid (280mm),All universal mounts,6499,Mid-High
+COOL31,Stock Cooler,Stock,AIO Liquid (360mm),AM4/AM5/LGA1700 (varies),7999,High
+COOL32,Deepcool,Gammaxx 400,Air (single tower),AM4/AM5/LGA1700 (with bracket),9499,Budget
+COOL33,Cooler Master,Hyper 212,"Air (dual tower, ARGB)",All universal mounts,12999,Budget-Mid
+COOL34,Arctic,Freezer 34,AIO Liquid (240mm),AM4/AM5/LGA1700 (varies),0,Mid
+COOL35,Corsair,ML240L,AIO Liquid (280mm),AM4/AM5/LGA1700 (with bracket),2199,Mid-High
+COOL36,Noctua,NH-D15,AIO Liquid (360mm),All universal mounts,2999,High
+COOL37,be quiet!,Pure Rock,Air (single tower),AM4/AM5/LGA1700 (varies),3799,Budget
+COOL38,NZXT,Kraken X63,"Air (dual tower, ARGB)",AM4/AM5/LGA1700 (with bracket),4999,Budget-Mid
+COOL39,Stock Cooler,Stock,AIO Liquid (240mm),All universal mounts,6499,Mid
+COOL40,Deepcool,Gammaxx 400,AIO Liquid (280mm),AM4/AM5/LGA1700 (varies),7999,Mid-High
+COOL41,Cooler Master,Hyper 212,AIO Liquid (360mm),AM4/AM5/LGA1700 (with bracket),9499,High
+COOL42,Arctic,Freezer 34,Air (single tower),All universal mounts,12999,Budget
+COOL43,Corsair,ML240L,"Air (dual tower, ARGB)",AM4/AM5/LGA1700 (varies),0,Budget-Mid
+COOL44,Noctua,NH-D15,AIO Liquid (240mm),AM4/AM5/LGA1700 (with bracket),2199,Mid
+COOL45,be quiet!,Pure Rock,AIO Liquid (280mm),All universal mounts,2999,Mid-High
+COOL46,NZXT,Kraken X63,AIO Liquid (360mm),AM4/AM5/LGA1700 (varies),3799,High
+COOL47,Stock Cooler,Stock,Air (single tower),AM4/AM5/LGA1700 (with bracket),4999,Budget
+COOL48,Deepcool,Gammaxx 400,"Air (dual tower, ARGB)",All universal mounts,6499,Budget-Mid
+COOL49,Cooler Master,Hyper 212,AIO Liquid (240mm),AM4/AM5/LGA1700 (varies),7999,Mid
+COOL50,Arctic,Freezer 34,AIO Liquid (280mm),AM4/AM5/LGA1700 (with bracket),9499,Mid-High

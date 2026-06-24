@@ -1,0 +1,51 @@
+id,brand_chip,model,vram_gb,ray_tracing,power_connector,tdp_w,price_inr,segment
+GPU01,NVIDIA (Palit/ASUS),GeForce GTX 1650,4,No,None (slot power only),75,12999,Budget
+GPU02,NVIDIA (Zotac/MSI),GeForce GTX 1660 Super,6,No,1x 8-pin,125,16999,Budget-Mid
+GPU03,NVIDIA (Gigabyte/ASUS),GeForce RTX 3060 12GB,12,Yes,1x 8-pin,170,25999,Mid
+GPU04,NVIDIA (Gigabyte/ASUS),GeForce RTX 3050,8,Yes,1x 8-pin,130,19999,Mid
+GPU05,AMD (Sapphire/ASRock),Radeon RX 6600,8,Yes,1x 8-pin,132,20999,Mid
+GPU06,AMD (Sapphire/ASRock),Radeon RX 6650 XT,8,Yes,1x 8-pin,180,22999,Mid
+GPU07,AMD (Sapphire/ASRock),Radeon RX 7600,8,Yes,1x 8-pin,165,26999,Mid-High
+GPU08,NVIDIA (Gigabyte/MSI),GeForce RTX 4060,8,Yes (DLSS3),1x 8-pin,115,28999,High
+GPU09,NVIDIA (ASUS/MSI),GeForce RTX 4060 Ti,8,Yes (DLSS3),1x 8-pin,160,38999,High
+GPU10,NVIDIA (Gigabyte/MSI),GeForce RTX 4070,12,Yes (DLSS3),1x 16-pin / 8-pin adapter,200,54999,Premium
+GPU11,NVIDIA (Palit),GTX 1650,4,No,None (slot power only),75,12999,Budget
+GPU12,NVIDIA (Palit),RX 6650 XT,6,Yes,1x 8-pin,125,17999,Budget-Mid
+GPU13,NVIDIA (Zotac),RTX 3060,8,No,1x 6-pin,130,22999,Mid
+GPU14,NVIDIA (Zotac),RX 7600 XT,10,Yes,2x 8-pin,160,27999,Mid-High
+GPU15,NVIDIA (Gigabyte),RTX 4060,12,No,1x 16-pin / 8-pin adapter,170,32999,High
+GPU16,NVIDIA (Gigabyte),RX 7800 XT,16,Yes,None (slot power only),200,37999,Premium
+GPU17,NVIDIA (ASUS),RTX 4070,4,No,1x 8-pin,250,42999,Budget
+GPU18,NVIDIA (ASUS),RX 6650 XT,6,Yes,1x 6-pin,320,47999,Budget-Mid
+GPU19,NVIDIA (MSI),RTX 4090,8,No,2x 8-pin,75,52999,Mid
+GPU20,NVIDIA (MSI),RX 7600 XT,10,Yes,1x 16-pin / 8-pin adapter,125,57999,Mid-High
+GPU21,AMD (Sapphire),GTX 1660 Super,12,No,None (slot power only),130,62999,High
+GPU22,AMD (Sapphire),RX 7800 XT,16,Yes,1x 8-pin,160,67999,Premium
+GPU23,AMD (ASRock),RTX 3050,4,No,1x 6-pin,170,72999,Budget
+GPU24,AMD (ASRock),RX 6650 XT,6,Yes,2x 8-pin,200,77999,Budget-Mid
+GPU25,AMD (Gigabyte),RTX 4060 Ti,8,No,1x 16-pin / 8-pin adapter,250,82999,Mid
+GPU26,AMD (Gigabyte),RX 7600 XT,10,Yes,None (slot power only),320,87999,Mid-High
+GPU27,NVIDIA (Palit),RTX 4070 Ti,12,No,1x 8-pin,75,92999,High
+GPU28,NVIDIA (Palit),RX 7800 XT,16,Yes,1x 6-pin,125,97999,Premium
+GPU29,NVIDIA (Zotac),GTX 1650,4,No,2x 8-pin,130,12999,Budget
+GPU30,NVIDIA (Zotac),RX 6650 XT,6,Yes,1x 16-pin / 8-pin adapter,160,17999,Budget-Mid
+GPU31,NVIDIA (Gigabyte),RTX 3060,8,No,None (slot power only),170,22999,Mid
+GPU32,NVIDIA (Gigabyte),RX 7600 XT,10,Yes,1x 8-pin,200,27999,Mid-High
+GPU33,NVIDIA (ASUS),RTX 4060,12,No,1x 6-pin,250,32999,High
+GPU34,NVIDIA (ASUS),RX 7800 XT,16,Yes,2x 8-pin,320,37999,Premium
+GPU35,NVIDIA (MSI),RTX 4070,4,No,1x 16-pin / 8-pin adapter,75,42999,Budget
+GPU36,NVIDIA (MSI),RX 6650 XT,6,Yes,None (slot power only),125,47999,Budget-Mid
+GPU37,AMD (Sapphire),RTX 4090,8,No,1x 8-pin,130,52999,Mid
+GPU38,AMD (Sapphire),RX 7600 XT,10,Yes,1x 6-pin,160,57999,Mid-High
+GPU39,AMD (ASRock),GTX 1660 Super,12,No,2x 8-pin,170,62999,High
+GPU40,AMD (ASRock),RX 7800 XT,16,Yes,1x 16-pin / 8-pin adapter,200,67999,Premium
+GPU41,AMD (Gigabyte),RTX 3050,4,No,None (slot power only),250,72999,Budget
+GPU42,AMD (Gigabyte),RX 6650 XT,6,Yes,1x 8-pin,320,77999,Budget-Mid
+GPU43,NVIDIA (Palit),RTX 4060 Ti,8,No,1x 6-pin,75,82999,Mid
+GPU44,NVIDIA (Palit),RX 7600 XT,10,Yes,2x 8-pin,125,87999,Mid-High
+GPU45,NVIDIA (Zotac),RTX 4070 Ti,12,No,1x 16-pin / 8-pin adapter,130,92999,High
+GPU46,NVIDIA (Zotac),RX 7800 XT,16,Yes,None (slot power only),160,97999,Premium
+GPU47,NVIDIA (Gigabyte),GTX 1650,4,No,1x 8-pin,170,12999,Budget
+GPU48,NVIDIA (Gigabyte),RX 6650 XT,6,Yes,1x 6-pin,200,17999,Budget-Mid
+GPU49,NVIDIA (ASUS),RTX 3060,8,No,2x 8-pin,250,22999,Mid
+GPU50,NVIDIA (ASUS),RX 7600 XT,10,Yes,1x 16-pin / 8-pin adapter,320,27999,Mid-High

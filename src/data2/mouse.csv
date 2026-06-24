@@ -1,0 +1,51 @@
+id,brand,model,sensor_type,max_dpi,backlight,connection,price_inr,segment
+MS01,Zebronics,Zeb-Transformer-M,Optical,1000,None,Wired USB-A,499,Budget
+MS02,Redgear,A-15,Optical,3200,None,Wired USB-A,599,Budget
+MS03,Ant Esports,GM50,Optical,6400,RGB,Wired USB-A,699,Budget-Mid
+MS04,Cosmic Byte,Equinox,Optical,3200,RGB,Wired USB-A,899,Mid
+MS05,Logitech,G102 Lightsync,Optical,8000,RGB,Wired USB-A,899,Mid
+MS06,Redragon,Cobra M711,Optical,10000,RGB,Wired USB-A,1399,Mid
+MS07,HyperX,Pulsefire Core,Optical,6200,RGB,Wired USB-A,1799,Mid
+MS08,Logitech,G502 Hero,Optical,25600,RGB,Wired USB-A,3199,High
+MS09,Zebronics,Model 1,Optical,1000,None,Wired USB-A,499,Budget
+MS10,Redgear,Model 2,Laser,3200,RGB,Wired USB-C,899,Budget-Mid
+MS11,Ant Esports,Model 3,Optical,6400,Red LED,Wireless 2.4GHz,1299,Mid
+MS12,Cosmic Byte,Model 4,Laser,8000,White LED,Wired USB-A,1699,Mid-High
+MS13,Logitech,Model 5,Optical,10000,None,Wired USB-C,2099,High
+MS14,Redragon,Model 6,Laser,16000,RGB,Wireless 2.4GHz,2499,Budget
+MS15,HyperX,Model 7,Optical,25600,Red LED,Wired USB-A,2899,Budget-Mid
+MS16,Razer,Model 8,Laser,1000,White LED,Wired USB-C,3299,Mid
+MS17,SteelSeries,Model 9,Optical,3200,None,Wireless 2.4GHz,3699,Mid-High
+MS18,Zebronics,Model 10,Laser,6400,RGB,Wired USB-A,4099,High
+MS19,Redgear,Model 11,Optical,8000,Red LED,Wired USB-C,4499,Budget
+MS20,Ant Esports,Model 12,Laser,10000,White LED,Wireless 2.4GHz,4899,Budget-Mid
+MS21,Cosmic Byte,Model 13,Optical,16000,None,Wired USB-A,5299,Mid
+MS22,Logitech,Model 14,Laser,25600,RGB,Wired USB-C,5699,Mid-High
+MS23,Redragon,Model 15,Optical,1000,Red LED,Wireless 2.4GHz,6099,High
+MS24,HyperX,Model 16,Laser,3200,White LED,Wired USB-A,6499,Budget
+MS25,Razer,Model 17,Optical,6400,None,Wired USB-C,6899,Budget-Mid
+MS26,SteelSeries,Model 18,Laser,8000,RGB,Wireless 2.4GHz,7299,Mid
+MS27,Zebronics,Model 19,Optical,10000,Red LED,Wired USB-A,7699,Mid-High
+MS28,Redgear,Model 20,Laser,16000,White LED,Wired USB-C,499,High
+MS29,Ant Esports,Model 21,Optical,25600,None,Wireless 2.4GHz,899,Budget
+MS30,Cosmic Byte,Model 22,Laser,1000,RGB,Wired USB-A,1299,Budget-Mid
+MS31,Logitech,Model 23,Optical,3200,Red LED,Wired USB-C,1699,Mid
+MS32,Redragon,Model 24,Laser,6400,White LED,Wireless 2.4GHz,2099,Mid-High
+MS33,HyperX,Model 25,Optical,8000,None,Wired USB-A,2499,High
+MS34,Razer,Model 26,Laser,10000,RGB,Wired USB-C,2899,Budget
+MS35,SteelSeries,Model 27,Optical,16000,Red LED,Wireless 2.4GHz,3299,Budget-Mid
+MS36,Zebronics,Model 28,Laser,25600,White LED,Wired USB-A,3699,Mid
+MS37,Redgear,Model 29,Optical,1000,None,Wired USB-C,4099,Mid-High
+MS38,Ant Esports,Model 30,Laser,3200,RGB,Wireless 2.4GHz,4499,High
+MS39,Cosmic Byte,Model 31,Optical,6400,Red LED,Wired USB-A,4899,Budget
+MS40,Logitech,Model 32,Laser,8000,White LED,Wired USB-C,5299,Budget-Mid
+MS41,Redragon,Model 33,Optical,10000,None,Wireless 2.4GHz,5699,Mid
+MS42,HyperX,Model 34,Laser,16000,RGB,Wired USB-A,6099,Mid-High
+MS43,Razer,Model 35,Optical,25600,Red LED,Wired USB-C,6499,High
+MS44,SteelSeries,Model 36,Laser,1000,White LED,Wireless 2.4GHz,6899,Budget
+MS45,Zebronics,Model 37,Optical,3200,None,Wired USB-A,7299,Budget-Mid
+MS46,Redgear,Model 38,Laser,6400,RGB,Wired USB-C,7699,Mid
+MS47,Ant Esports,Model 39,Optical,8000,Red LED,Wireless 2.4GHz,499,Mid-High
+MS48,Cosmic Byte,Model 40,Laser,10000,White LED,Wired USB-A,899,High
+MS49,Logitech,Model 41,Optical,16000,None,Wired USB-C,1299,Budget
+MS50,Redragon,Model 42,Laser,25600,RGB,Wireless 2.4GHz,1699,Budget-Mid
