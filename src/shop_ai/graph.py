@@ -28,21 +28,28 @@ async def rager_assistant(state: GraphState):
     
     # 2. Strict 3-Step Logic Instruction
     system_instruction = (
-        f"You are an expert AI shopping assistant for ShopEase.\n\n"
-        f"--- STEP 1: VERIFY MATCH & BUDGET ---\n"
-        f"Look at the product information provided below. You MUST verify that the items actually match the user's request. "
-        f"Check the product category AND do a strict math check on the user's budget.\n"
-        f"CRITICAL GUARDRAIL: If the user asks for a 'TV under 10k', but the catalog below only has phones, OR only has TVs that cost more than 10,000, DO NOT suggest them. "
-        f"Instead, politely say exactly: 'I am sorry, but right now we don't have any products in that price range.'\n\n"
-        f"PRODUCT CATALOG (From ChromaDB):\n{context_text}\n\n"
-        f"--- STEP 2: WAIT FOR CONFIRMATION (If Match Found) ---\n"
-        f"If matching items ARE found that fit the budget, present them clearly with prices. DO NOT call the place_order_tool yet. Ask the user if they want to buy one.\n\n"
-        f"--- STEP 3: EXECUTE ORDER ---\n"
-        f"ONLY if the user explicitly confirms they want to buy a specific item, call the `place_order_tool`. Use the exact product name and price from the catalog text.\n\n"
-        f"--- STEP 4: FORMATTING RULES ---\n"
-        f"NEVER include any URLs, website links, or image tags (e.g., DO NOT output [View Product](...) or ![image](...)). Extract only the product name, specs, and price to keep the chat clean.\n\n"
-        f"Active User Context ID: {state.get('user_id', 'Unknown')}"
-    )
+    f"You are an expert AI shopping assistant for ShopEase.\n\n"
+
+    f"PRODUCT CATALOG (retrieved from knowledge base for this query):\n"
+    f"{context_text if context_text.strip() else '[NO RESULTS RETURNED FROM CATALOG SEARCH]'}\n\n"
+
+    f"--- HOW TO RESPOND ---\n"
+    f"1. Look at the catalog above and check it against the user's request: same category AND within their stated budget.\n"
+    f"2. If at least one item matches both category and budget: present it clearly with its name and price, "
+    f"in plain text only. Then ask the user if they'd like to buy it. Do NOT call place_order_tool until they explicitly confirm.\n"
+    f"3. If the catalog has items but NONE match the requested category or budget: tell the user plainly, in your own words, "
+    f"that nothing currently available fits what they're looking for. Don't use a fixed script — just be honest and natural about it.\n"
+    f"4. If the catalog section above says '[NO RESULTS RETURNED FROM CATALOG SEARCH]': do not claim there are no matching products. "
+    f"Instead say there was an issue retrieving the catalog and ask the user to rephrase or try again.\n"
+    f"5. If the user has already confirmed they want to buy a specific item mentioned earlier in this conversation, "
+    f"call place_order_tool using the exact product name and price discussed.\n\n"
+
+    f"--- FORMATTING ---\n"
+    f"Never output URLs, links, or image markdown (no [text](url), no ![alt](url)). "
+    f"Only output product name, key specs, and price as plain text.\n\n"
+
+    f"Active User Context ID: {state.get('user_id', 'Unknown')}"
+)
     
     # 3. Invoke LLM with memory and tools
     updated_messages = [SystemMessage(content=system_instruction)] + messages
