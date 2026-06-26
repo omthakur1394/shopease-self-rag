@@ -10,7 +10,6 @@ venv/
 .venv/
 __pypackages__/
 *.env
-*.sqlite3
 *.db
 *.log
 .DS_Store
