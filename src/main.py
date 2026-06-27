@@ -45,12 +45,19 @@ async def order(request: order_info):
         }
         
         res = await agent_app.ainvoke(input_state, config=config)
-        final_answer = res["messages"][-1].content
         
-        return {"res": final_answer}
+        final_answer = res["messages"][-1].content
+        metadata = res.get("product_metadata", [])
+        return {
+            "res": final_answer,
+            "metadata": metadata
+        }
         
     except Exception as e:
-        return {"res": f"I encountered an error while trying to process your order. Error details: {str(e)}"}
+        return {
+            "res": f"I encountered an error while trying to process your order. Error details: {str(e)}",
+            "metadata": []
+        }
 
 if __name__ == "__main__":
     uvicorn.run("src.main:app",host="0.0.0.0",port=7860,reload=True)
