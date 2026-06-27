@@ -1,43 +1,25 @@
-import os
-import csv
 from pathlib import Path
-from langchain_core.documents import Document  
+from langchain_community.document_loaders.csv_loader import CSVLoader
 from langchain_community.vectorstores.utils import filter_complex_metadata
 from langchain_huggingface import HuggingFaceEmbeddings
 from src.shop_ai.config2 import DIR2, EMBEDDING_MODEL2, Chroma_DB2
 from langchain_chroma import Chroma
+import os 
 
 def csv_fun():
     all_docs = []
     for filename in os.listdir(DIR2):
         if filename.lower().endswith(".csv"):
             file_path = os.path.join(DIR2, filename)
-            def read_csv_safe(path):
-                try:
-                    with open(path, mode='r', encoding='utf-8') as f:
-                        return list(csv.DictReader(f))
-                except UnicodeDecodeError:
-                    with open(path, mode='r', encoding='latin-1') as f:
-                        return list(csv.DictReader(f))
-            
-            rows = read_csv_safe(file_path)
-            
-            for i, row in enumerate(rows):
-                content = "\n".join([f"{k}: {v}" for k, v in row.items() if v])
-                meta = {
-                    "source": file_path,
-                    "row": i,
-                    "product_name": str(row.get("product_name", "Unknown")),
-                    "price": str(row.get("price", "0")),
-                    "rating": str(row.get("rating", "0"))
-                }
-                
-                doc = Document(page_content=content, metadata=meta)
-                all_docs.append(doc)
-                
+            try:
+                loader = CSVLoader(file_path=file_path, encoding="utf-8")
+                docs = loader.load()
+            except Exception:
+                loader = CSVLoader(file_path=file_path, encoding="latin-1")
+                docs = loader.load()
+            all_docs.extend(docs)
     if not all_docs:
         raise ValueError("csv not found")
-        
     return filter_complex_metadata(all_docs)
 
 def get_retiver():
