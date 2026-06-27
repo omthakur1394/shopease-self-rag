@@ -13,6 +13,7 @@ from src.shop_ai.tools import place_order_tool, return_order_tool, check_order_d
 class GraphState(TypedDict):
     messages: Annotated[Sequence[BaseMessage], add_messages]
     user_id: str
+    product_metadata: list[dict]
 
 vectorstore = get_retiver()
 shopease_kb_retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
@@ -42,6 +43,8 @@ async def rager_assistant(state: GraphState):
     context_docs = await shopease_kb_retriever.ainvoke(search_query)
     context_text = "\n".join([doc.page_content for doc in context_docs])
     
+    extracted_metadata = [doc.metadata for doc in context_docs] if context_docs else []
+    
     system_instruction = (
         f"You are an expert AI shopping assistant for ShopEase.\n\n"
         f"PRODUCT CATALOG (retrieved from knowledge base for this query):\n"
@@ -66,7 +69,8 @@ async def rager_assistant(state: GraphState):
     
     updated_messages = [SystemMessage(content=system_instruction)] + messages
     response = await llm_with_tools.ainvoke(updated_messages)
-    return {"messages": [response]}
+    
+    return {"messages": [response], "product_metadata": extracted_metadata}
 
 builder = StateGraph(GraphState)
 builder.add_node("assistant", rager_assistant)
