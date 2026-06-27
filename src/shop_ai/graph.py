@@ -13,7 +13,6 @@ from src.shop_ai.tools import place_order_tool, return_order_tool, check_order_d
 class GraphState(TypedDict):
     messages: Annotated[Sequence[BaseMessage], add_messages]
     user_id: str
-    product_metadata: list[dict]
 
 vectorstore = get_retiver()
 shopease_kb_retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
@@ -35,15 +34,18 @@ query_rewriter = rewrite_prompt | llm
 
 async def rager_assistant(state: GraphState):
     messages = list(state["messages"])
-    user_query = messages[-1].content
     
+    # Ticket 1 Fix: Safely get the last human message so tool messages don't break the query rewriter
+    user_query = next((m.content for m in reversed(messages) if m.type == "human"), "")
+    
+    if not user_query:
+        return {"messages": []}
+        
     rewrite_response = await query_rewriter.ainvoke({"query": user_query})
     search_query = rewrite_response.content.strip()
     
     context_docs = await shopease_kb_retriever.ainvoke(search_query)
     context_text = "\n".join([doc.page_content for doc in context_docs])
-    
-    extracted_metadata = [doc.metadata for doc in context_docs] if context_docs else []
     
     system_instruction = (
         f"You are an expert AI shopping assistant for ShopEase.\n\n"
@@ -69,8 +71,7 @@ async def rager_assistant(state: GraphState):
     
     updated_messages = [SystemMessage(content=system_instruction)] + messages
     response = await llm_with_tools.ainvoke(updated_messages)
-    
-    return {"messages": [response], "product_metadata": extracted_metadata}
+    return {"messages": [response]}
 
 builder = StateGraph(GraphState)
 builder.add_node("assistant", rager_assistant)
