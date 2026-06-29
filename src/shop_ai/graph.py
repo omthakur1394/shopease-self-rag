@@ -1,6 +1,6 @@
 from typing import Annotated, Sequence
 from typing_extensions import TypedDict
-from langchain_core.messages import BaseMessage, SystemMessage
+from langchain_core.messages import BaseMessage, SystemMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langgraph.graph import StateGraph
 from langgraph.graph.message import add_messages
@@ -20,7 +20,7 @@ tools = [place_order_tool, return_order_tool, check_order_details_tool]
 llm_with_tools = llm.bind_tools(tools)
 
 rewrite_prompt = ChatPromptTemplate.from_messages([
-    ("system", "You are an internal search query optimizer."),
+    ("system", "You are an internal search query optimizer. Extract the core product or search intent from the user's query. Keep it concise."),
     ("user", "{query}")
 ])
 
@@ -28,8 +28,6 @@ query_rewriter = rewrite_prompt | llm
 
 async def rager_assistant(state: GraphState):
     messages = list(state["messages"])
-    
-    # Ticket 1 Fix: Correctly extract the last HUMAN message
     user_query = next((m.content for m in reversed(messages) if m.type == "human"), "")
     
     if not user_query:
@@ -39,9 +37,15 @@ async def rager_assistant(state: GraphState):
     search_query = rewrite_response.content.strip()
     
     context_docs = await shopease_kb_retriever.ainvoke(search_query)
-    context_text = "\n".join([doc.page_content for doc in context_docs])
-    
-    system_instruction = (f"You are an expert shopping assistant. Context: {context_text}")
+    context_text = "\n\n".join([doc.page_content for doc in context_docs])
+    system_instruction = (
+        "You are an expert Shopease AI shopping assistant.\n\n"
+        "CRITICAL WORKFLOW RULE (Human-in-the-Loop):\n"
+        "1. You MUST NEVER execute the place_order_tool or return_order_tool without explicitly asking the user for confirmation first.\n"
+        "2. Always present the product details and price, then ask 'Would you like me to place an order for this?'\n"
+        "3. Only execute the tool AFTER the user replies with a clear 'yes', 'confirm', or 'proceed'.\n\n"
+        f"Knowledge Base Context:\n{context_text}"
+    )
     
     updated_messages = [SystemMessage(content=system_instruction)] + messages
     response = await llm_with_tools.ainvoke(updated_messages)
