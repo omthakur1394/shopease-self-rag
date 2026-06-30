@@ -11,6 +11,6 @@ class ShopEaseRAGState(BaseModel):
     reflection: str = ""
     revised: bool = False
     attempts: int = 0
-    order_id = str = ""
-    
+    order_id: str = ""
+
     
