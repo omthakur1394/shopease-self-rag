@@ -1,9 +1,64 @@
+import os
+import random
+import re
+from dotenv import load_dotenv
+from motor.motor_asyncio import AsyncIOMotorClient
 from src.graph.state import ShopEaseRAGState
 from src.retriever.search import getvectory
-from src.core.config import llm  
+from src.core.config import llm
+
+load_dotenv()
+MONGO_URI = os.getenv("MONGO_URI")
+
+client = AsyncIOMotorClient(MONGO_URI)
+db = client.shopease_db
+orders_collection = db.orders
+tickets_collection = db.tickets
 
 vectorstore = getvectory()
-shopease_kb_retriever = vectorstore.as_retriever(search_kwargs={"k": 5}) 
+shopease_kb_retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
+
+async def handle_support_ticket(state: ShopEaseRAGState) -> ShopEaseRAGState:
+    user_msg = state.question.lower()
+    order_id = state.order_id
+    
+    if not order_id:
+        match = re.search(r'\b\d{5,}\b', user_msg)
+        if match:
+            order_id = match.group(0)
+
+    if order_id:
+        order_exists = await orders_collection.find_one({"order_id": order_id})
+        
+        if not order_exists:
+            return state.model_copy(update={
+                "answer": f"I couldn't find Order ID {order_id} in our system. Could you double-check the number for me?"
+            })
+
+        if any(word in user_msg for word in ["solved", "resolved", "thank", "fixed", "slove"]):
+            await tickets_collection.update_many(
+                {"order_id": order_id, "status": "Open"},
+                {"$set": {"status": "Resolved", "resolution_note": state.question}}
+            )
+            return state.model_copy(update={
+                "order_id": order_id,
+                "answer": f"Awesome! I have marked your ticket for Order ID {order_id} as RESOLVED in our database."
+            })
+            
+        ticket_id = f"TKT-{random.randint(1000, 9999)}"
+        await tickets_collection.insert_one({
+            "ticket_id": ticket_id,
+            "order_id": order_id,
+            "chat_log": state.question,
+            "status": "Open"
+        })
+        
+        return state.model_copy(update={
+            "order_id": order_id,
+            "answer": f"✅ Ticket Raised (ID: {ticket_id})\n\nOrder ID: {order_id}\nI have logged your exact issue directly into our database. Our support team is on it!"
+        })
+
+    return state
 
 def retrieve_policy_docs(state: ShopEaseRAGState) -> ShopEaseRAGState:
     query = state.search_query if state.search_query else state.question
