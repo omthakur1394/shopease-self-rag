@@ -18,26 +18,26 @@ vectorstore = getvectory()
 shopease_kb_retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
 
 async def handle_support_ticket(state: ShopEaseRAGState):
-    user_msg = state.get("question", "").lower()
-    order_id = state.get("order_id", "")
+    user_msg = (state.question or "").lower()
+    order_id = state.order_id
     
     if not order_id:
         match = re.search(r'\bord-[a-z0-9]+\b', user_msg, re.IGNORECASE)
         if match:
             order_id = match.group(0).upper()
 
-    new_question = state.get("question")
+    new_question = state.question
     if order_id:
         order_data = await orders_collection.find_one({"order_id": order_id})
         if order_data:
-            new_question = f"User Question: {state.get('question')}. Order Details: {order_data}"
+            new_question = f"User Question: {state.question}. Order Details: {order_data}"
             
-    history_update = [f"User: {state.get('question')}"]
+    history_update = [f"User: {state.question}"]
             
     return {"question": new_question, "order_id": order_id, "chat_history": history_update}
 
 def retrieve_policy_docs(state: ShopEaseRAGState):
-    query = state.get("search_query") or state.get("question")
+    query = state.search_query or state.question
     clean_query = query.replace("\x00", "").strip()
     try:
         shopease_docs = shopease_kb_retriever.invoke(clean_query)
@@ -46,8 +46,8 @@ def retrieve_policy_docs(state: ShopEaseRAGState):
     return {"retrieved_docs": shopease_docs}
 
 def generate_support_answer(state: ShopEaseRAGState):
-    context = "\n\n".join([doc.page_content for doc in state.get("retrieved_docs", [])])
-    history_str = "\n".join(state.get("chat_history", []))
+    context = "\n\n".join([doc.page_content for doc in state.retrieved_docs])
+    history_str = "\n".join(state.chat_history)
     prompt = (
         "You are an expert, conversational Customer Support AI for ShopEase.\n"
         "Your goal is to solve the customer's problem step-by-step using ONLY the provided Policy Context and Order Details.\n\n"
@@ -58,24 +58,24 @@ def generate_support_answer(state: ShopEaseRAGState):
         "4. DO NOT use citation brackets or technical metadata.\n\n"
         f"Policy Context:\n{context}\n\n"
         f"Chat History:\n{history_str}\n\n"
-        f"Latest Customer Input:\n{state.get('question')}"
+        f"Latest Customer Input:\n{state.question}"
     )
     answer = llm.invoke(prompt).content.strip()
     
-    return {"answer": answer, "attempts": state.get("attempts", 0) + 1}
+    return {"answer": answer, "attempts": state.attempts + 1}
 
 def reflect_on_policy_compliance(state: ShopEaseRAGState):
     prompt = (
         f"Is this answer helpful and compliant with ShopEase policies?\n"
         f"Respond ONLY with 'Reflection: YES' or 'Reflection: NO'.\n\n"
-        f"Question: {state.get('question')}\nAnswer: {state.get('answer')}"
+        f"Question: {state.question}\nAnswer: {state.answer}"
     )
     result = llm.invoke(prompt).content
     is_ok = "reflection: yes" in result.lower()
     return {"reflection": result, "revised": not is_ok}
 
 def rewrite_support_query(state: ShopEaseRAGState):
-    prompt = f"Optimize this query for policy retrieval: {state.get('question')}"
+    prompt = f"Optimize this query for policy retrieval: {state.question}"
     new_query = llm.invoke(prompt).content.strip()
     return {"search_query": new_query}
 

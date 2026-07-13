@@ -14,3 +14,5 @@ class ShopEaseRAGState(BaseModel):
     revised: bool = False
     attempts: int = 0
     order_id: str = ""
+    chat_history: List[str] = []  
+    
