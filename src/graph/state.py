@@ -1,16 +1,14 @@
-from pydantic import BaseModel
-from typing import List
-from langchain_core.documents import Document
+from typing import Annotated, List, Any
+from typing_extensions import TypedDict
+import operator
 
-
-class ShopEaseRAGState(BaseModel):
-    question:str
-    search_query:str = ""
-    retrieved_docs: List[Document] = []
-    answer: str = ""
-    reflection: str = ""
-    revised: bool = False
-    attempts: int = 0
-    order_id: str = ""
-
-    
+class ShopEaseRAGState(TypedDict):
+    question: str
+    search_query: str
+    retrieved_docs: List[Any]
+    answer: str
+    chat_history: Annotated[List[str], operator.add] 
+    reflection: str
+    revised: bool
+    attempts: int
+    order_id: str
