@@ -34,7 +34,16 @@ async def handle_support_ticket(state: ShopEaseRAGState):
             
     history_update = [f"User: {state.question}"]
             
-    return {"question": new_question, "order_id": order_id, "chat_history": history_update}
+    return {
+        "question": new_question, 
+        "order_id": order_id, 
+        "chat_history": history_update,
+        "answer": "",
+        "attempts": 0,
+        "search_query": "",
+        "reflection": "",
+        "revised": False
+    }
 
 def retrieve_policy_docs(state: ShopEaseRAGState):
     query = state.search_query or state.question
