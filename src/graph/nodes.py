@@ -60,9 +60,14 @@ def generate_support_answer(state: ShopEaseRAGState):
         f"Chat History:\n{history_str}\n\n"
         f"Latest Customer Input:\n{state.question}"
     )
+
     answer = llm.invoke(prompt).content.strip()
     
-    return {"answer": answer, "attempts": state.attempts + 1}
+    return {
+        "answer": answer, 
+        "attempts": state.attempts + 1,
+        "chat_history": [f"Assistant: {answer}"]
+    }
 
 def reflect_on_policy_compliance(state: ShopEaseRAGState):
     prompt = (

@@ -4,6 +4,9 @@ from langchain_core.documents import Document
 from langchain_core.messages import BaseMessage
 from langgraph.graph.message import add_messages
 
+def append_chat_history(left: List[str], right: List[str]) -> List[str]:
+    return left + right
+
 class ShopEaseRAGState(BaseModel):
     messages: Annotated[Sequence[BaseMessage], add_messages] = Field(default_factory=list)
     question: str
@@ -14,5 +17,4 @@ class ShopEaseRAGState(BaseModel):
     revised: bool = False
     attempts: int = 0
     order_id: str = ""
-    chat_history: List[str] = []  
-    
+    chat_history: Annotated[List[str], append_chat_history] = Field(default_factory=list)
