@@ -1,5 +1,6 @@
 import os
 import re
+from langchain_core.messages import AIMessage
 from dotenv import load_dotenv
 from motor.motor_asyncio import AsyncIOMotorClient
 from src.graph.state import ShopEaseRAGState
@@ -79,4 +80,7 @@ def rewrite_support_query(state: ShopEaseRAGState):
     return {"search_query": new_query}
 
 def finalize_response(state: ShopEaseRAGState):
-    return {"chat_history": [f"Bot: {state.get('answer')}"]}
+    return {
+        "messages": [AIMessage(content=state.answer)],
+        "answer": state.answer
+    }
