@@ -9,6 +9,8 @@ langchain-community
 langgraph
 langchain-openai
 sentence-transformers
-fastapi 
+fastapi
 uvicorn
 motor
+python-jose[cryptography]
+python-multipart

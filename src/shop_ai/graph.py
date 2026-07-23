@@ -29,7 +29,6 @@ query_rewriter = rewrite_prompt | llm
 async def rager_assistant(state: GraphState):
     messages = list(state["messages"])
     
-    # Safely extract ONLY the last human message for the vector search
     user_query = next((m.content for m in reversed(messages) if m.type == "human"), "")
     
     if not user_query:
@@ -38,11 +37,9 @@ async def rager_assistant(state: GraphState):
     rewrite_response = await query_rewriter.ainvoke({"query": user_query})
     search_query = rewrite_response.content.strip()
     
-    # Pure Text Retrieval (No Metadata extraction)
     context_docs = await shopease_kb_retriever.ainvoke(search_query)
     context_text = "\n\n".join([doc.page_content for doc in context_docs])
     
-    # Your custom, highly-optimized HITL prompt
     system_instruction = (
         f"You are an expert AI shopping assistant for ShopEase.\n\n"
         f"PRODUCT CATALOG (retrieved from knowledge base for this query):\n"
