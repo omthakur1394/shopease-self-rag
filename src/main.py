@@ -12,9 +12,17 @@ from src.auth.auth import SECRET_KEY,ALGORITHM,get_Current_User,TokenData
 from jose import jwt
 import uvicorn 
 
-
+origins = [
+    "https://localhost:3000",
+    "https://127.0.0.1:3000",
+    "https://webapp-three-drab-53.vercel.app/"
+]
 app = FastAPI()
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
+app.add_middleware(CORSMiddleware, 
+allow_origins=origins, 
+allow_credentials=True, 
+allow_methods=["*"], 
+allow_headers=["*"])
 
 class chat_bot(BaseModel):
     thread_id: str = "1"
