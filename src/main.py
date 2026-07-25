@@ -15,7 +15,7 @@ import uvicorn
 origins = [
     "https://localhost:3000",
     "https://127.0.0.1:3000",
-    "https://webapp-three-drab-53.vercel.app/"
+    "https://webapp-three-drab-53.vercel.app"
 ]
 app = FastAPI()
 app.add_middleware(CORSMiddleware, 
