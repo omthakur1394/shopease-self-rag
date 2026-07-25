@@ -29,7 +29,7 @@ def get_Current_User(token:Annotated[str,Depends(oauth2_scheme)]):
        if username is None or user_id is None:
            raise credentials_exception
        return TokenData(id=user_id, username=username, email=email)
-   except Exception as e:
+   except  JWTError:
        raise credentials_exception 
    
     
