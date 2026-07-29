@@ -40,6 +40,9 @@ async def rager_assistant(state: GraphState):
     context_docs = await shopease_kb_retriever.ainvoke(search_query)
     context_text = "\n\n".join([doc.page_content for doc in context_docs])
     
+    last_assistant_msg = next((m.content for m in reversed(messages) if m.type == "ai"), "")
+    is_waiting_for_confirmation = "Would you like me to place an order for this?" in last_assistant_msg
+
     system_instruction = (
         f"You are an expert AI shopping assistant for ShopEase.\n\n"
         f"PRODUCT CATALOG (retrieved from knowledge base for this query):\n"
@@ -47,13 +50,13 @@ async def rager_assistant(state: GraphState):
         f"--- STRICT MANDATORY WORKFLOW ---\n"
         f"You must strictly follow this two-step process for all purchases to keep the human in the loop:\n\n"
         f"STEP 1: SEARCH & PROPOSE\n"
-        f"If the user asks for a product (even if they say 'I want to buy [product]'), find a match in the catalog. "
+        f"If the user asks for a product or expresses buying intent (e.g., 'buy a TV', 'I want to buy', 'buy one'), find a match in the catalog. "
         f"Present the matching item with its exact name and price. You MUST end your message by explicitly asking: "
         f"'Would you like me to place an order for this?'\n"
-        f"🛑 CRITICAL: DO NOT call the `place_order_tool` during this step. You must wait for the user to reply to your question.\n\n"
+        f"DO NOT call `place_order_tool` during Step 1 under any circumstances.\n\n"
         f"STEP 2: CONFIRM & EXECUTE\n"
-        f"ONLY call the `place_order_tool` if in the PREVIOUS turn you proposed a specific item, AND the user's LATEST message is a direct confirmation (e.g., 'yes', 'buy it', 'confirm', 'do it'). "
-        f"If they ask a new question instead of confirming, go back to Step 1.\n\n"
+        f"ONLY call `place_order_tool` if in the PREVIOUS turn you asked 'Would you like me to place an order for this?', AND the user's LATEST response is a direct confirmation (e.g., 'yes', 'confirm', 'proceed'). "
+        f"If multiple products match the brand/category in the catalog, DO NOT execute an order. You MUST ask the user to clarify which specific model or size they want first.\n\n"
         f"--- FALLBACK RULES ---\n"
         f"- If items exist but don't match the user's request, plainly state that nothing fits right now.\n"
         f"- If the catalog says '[NO RESULTS RETURNED]', say there was an issue retrieving the catalog and ask the user to rephrase.\n\n"
@@ -63,7 +66,10 @@ async def rager_assistant(state: GraphState):
     )
     
     updated_messages = [SystemMessage(content=system_instruction)] + messages
-    response = await llm_with_tools.ainvoke(updated_messages)
+    if is_waiting_for_confirmation:
+        response = await llm_with_tools.ainvoke(updated_messages)
+    else:
+        response = await llm.ainvoke(updated_messages)
     return {"messages": [response]}
 
 builder = StateGraph(GraphState)
