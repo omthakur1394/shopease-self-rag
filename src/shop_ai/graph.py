@@ -40,23 +40,17 @@ async def rager_assistant(state: GraphState):
     context_docs = await shopease_kb_retriever.ainvoke(search_query)
     context_text = "\n\n".join([doc.page_content for doc in context_docs])
     
-    last_assistant_msg = next((m.content for m in reversed(messages) if m.type == "ai"), "")
-    is_waiting_for_confirmation = "Would you like me to place an order for this?" in last_assistant_msg
-
     system_instruction = (
         f"You are an expert AI shopping assistant for ShopEase.\n\n"
         f"PRODUCT CATALOG (retrieved from knowledge base for this query):\n"
         f"{context_text if context_text.strip() else '[NO RESULTS RETURNED FROM CATALOG SEARCH]'}\n\n"
-        f"--- STRICT MANDATORY WORKFLOW ---\n"
-        f"You must strictly follow this two-step process for all purchases to keep the human in the loop:\n\n"
-        f"STEP 1: SEARCH & PROPOSE\n"
-        f"If the user asks for a product or expresses buying intent (e.g., 'buy a TV', 'I want to buy', 'buy one'), find a match in the catalog. "
-        f"Present the matching item with its exact name and price. You MUST end your message by explicitly asking: "
-        f"'Would you like me to place an order for this?'\n"
-        f"DO NOT call `place_order_tool` during Step 1 under any circumstances.\n\n"
-        f"STEP 2: CONFIRM & EXECUTE\n"
-        f"ONLY call `place_order_tool` if in the PREVIOUS turn you asked 'Would you like me to place an order for this?', AND the user's LATEST response is a direct confirmation (e.g., 'yes', 'confirm', 'proceed'). "
-        f"If multiple products match the brand/category in the catalog, DO NOT execute an order. You MUST ask the user to clarify which specific model or size they want first.\n\n"
+        f"--- MANDATORY ORDERING RULES ---\n"
+        f"1. DIRECT ORDER EXECUTION:\n"
+        f"   When the user asks to buy or confirms an order for a specific product (e.g., 'yes place the order', 'buy the VU TV', 'confirm', 'yes you can place the order'), YOU MUST IMMEDIATELY CALL `place_order_tool`.\n"
+        f"   DO NOT ask the user for delivery address, payment method, or extra confirmation details in chat.\n"
+        f"   NEVER claim that you cannot execute transactions. You HAVE full capability via `place_order_tool`.\n\n"
+        f"2. AMBIGUITY CHECK:\n"
+        f"   If multiple different models of the same brand exist (e.g., 50-inch vs 55-inch Kodak TV) and the user did not specify which one, ask them to clarify the exact size or model before placing the order.\n\n"
         f"--- FALLBACK RULES ---\n"
         f"- If items exist but don't match the user's request, plainly state that nothing fits right now.\n"
         f"- If the catalog says '[NO RESULTS RETURNED]', say there was an issue retrieving the catalog and ask the user to rephrase.\n\n"
@@ -66,10 +60,7 @@ async def rager_assistant(state: GraphState):
     )
     
     updated_messages = [SystemMessage(content=system_instruction)] + messages
-    if is_waiting_for_confirmation:
-        response = await llm_with_tools.ainvoke(updated_messages)
-    else:
-        response = await llm.ainvoke(updated_messages)
+    response = await llm_with_tools.ainvoke(updated_messages)
     return {"messages": [response]}
 
 builder = StateGraph(GraphState)
