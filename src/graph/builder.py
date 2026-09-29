@@ -1,5 +1,8 @@
+import os
+from dotenv import load_dotenv
+from pymongo import MongoClient
 from langgraph.graph import START, END, StateGraph
-from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.mongodb import MongoDBSaver
 from src.graph.nodes import (
     reflect_on_policy_compliance, 
     retrieve_policy_docs, 
@@ -9,6 +12,12 @@ from src.graph.nodes import (
     handle_support_ticket 
 )
 from src.graph.state import ShopEaseRAGState
+
+load_dotenv()
+MONGO_URI = os.getenv("MONGO_URI")
+
+mongo_client = MongoClient(MONGO_URI)
+checkpointer = MongoDBSaver(mongo_client, db_name="shopease_db")
 
 graph = StateGraph(ShopEaseRAGState)
 
@@ -41,4 +50,4 @@ graph.add_conditional_edges(
 graph.add_edge("rewrite", "retriever")
 graph.add_edge("responder", END)
 
-app_graph = graph.compile(checkpointer=MemorySaver())
+app_graph = graph.compile(checkpointer=checkpointer)

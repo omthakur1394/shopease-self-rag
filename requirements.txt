@@ -7,10 +7,12 @@ langchain-huggingface
 langchain-docling
 langchain-community
 langgraph
+langgraph-checkpoint-mongodb
 langchain-openai
 sentence-transformers
 fastapi
 uvicorn
 motor
+pymongo
 python-jose[cryptography]
 python-multipart

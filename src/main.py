@@ -14,7 +14,11 @@ from jose import jwt
 import uvicorn 
 
 load_dotenv()
+
 MONGO_URI = os.getenv("MONGO_URI")
+if not MONGO_URI:
+    raise RuntimeError("MONGO_URI is not set in environment variables")
+
 client = AsyncIOMotorClient(MONGO_URI)
 db = client.shopease_db
 orders_collection = db.orders
@@ -27,7 +31,7 @@ origins = [
     "https://webapp-three-drab-53.vercel.app"
 ]
 
-app = FastAPI()
+app = FastAPI(title="ShopEase AI RAG & Sales Agent")
 app.add_middleware(
     CORSMiddleware, 
     allow_origins=origins, 
@@ -47,10 +51,13 @@ class order_info(BaseModel):
     thread_id: str = "1"
     chat: str
     confirm_action: bool = False
+    order_id: str = ""
+    user_id: str = ""
+    username: str = ""
 
 @app.get("/")
 async def root():
-    return {"status": "ok", "service": "shopease-api"}
+    return {"status": "ok", "service": "shopease-api", "checkpoint_db": "mongodb"}
 
 @app.post("/chat")
 async def chat(request: chat_bot, current_user: Annotated[TokenData, Depends(get_Current_User)]):
@@ -65,7 +72,7 @@ async def chat(request: chat_bot, current_user: Annotated[TokenData, Depends(get
         order_user_id = str(order.get("user_id") or "").strip()
         order_username = str(order.get("username") or "").strip().lower()
         req_user_id = str(request.user_id or "").strip()
-        req_username = str(request.username or "").strip().lower()
+        req_username = str(request.username or current_user.username or "").strip().lower()
 
         is_mismatch = False
         if order_user_id and req_user_id and order_user_id != req_user_id:
@@ -80,16 +87,21 @@ async def chat(request: chat_bot, current_user: Annotated[TokenData, Depends(get
             )
 
     try:
-        config = {"configurable": {"thread_id": request.thread_id}, "recursion_limit": 15}
-        res = await app_graph.ainvoke({"question": request.chat, "order_id": request.order_id}, config=config)
-        return {"res": res["answer"], "user": current_user.username}
+        thread_id = request.thread_id if request.thread_id != "1" else (current_user.username or "1")
+        config = {"configurable": {"thread_id": thread_id}, "recursion_limit": 15}
+        res = await app_graph.ainvoke(
+            {"question": request.chat, "order_id": request.order_id}, 
+            config=config
+        )
+        return {"res": res.get("answer", ""), "user": current_user.username}
     except Exception as e:
-        return {"res": f"I am having trouble finding the exact policy details right now. Error: {str(e)}"}
+        return {"res": f"I am having trouble processing your request right now. Error: {str(e)}"}
 
 @app.post("/order")
 async def order(request: order_info, current_user: Annotated[TokenData, Depends(get_Current_User)]):
     try:
-        config = {"configurable": {"thread_id": request.thread_id}, "recursion_limit": 15}
+        thread_id = request.thread_id if request.thread_id != "1" else (current_user.username or "1")
+        config = {"configurable": {"thread_id": thread_id}, "recursion_limit": 15}
         current_state = agent_app.get_state(config)
         
         if current_state.next:
@@ -108,7 +120,11 @@ async def order(request: order_info, current_user: Annotated[TokenData, Depends(
                     "user": current_user.username
                 }
 
-        input_state = {"messages": [HumanMessage(content=request.chat)], "user_id": request.thread_id}
+        actual_user_id = request.user_id or current_user.username or thread_id
+        input_state = {
+            "messages": [HumanMessage(content=request.chat)], 
+            "user_id": actual_user_id
+        }
         res = await agent_app.ainvoke(input_state, config=config)
         
         updated_state = agent_app.get_state(config)
