@@ -46,6 +46,7 @@ class chat_bot(BaseModel):
 class order_info(BaseModel):
     thread_id: str = "1"
     chat: str
+    confirm_action: bool = False
 
 @app.get("/")
 async def root():
@@ -89,11 +90,50 @@ async def chat(request: chat_bot, current_user: Annotated[TokenData, Depends(get
 async def order(request: order_info, current_user: Annotated[TokenData, Depends(get_Current_User)]):
     try:
         config = {"configurable": {"thread_id": request.thread_id}, "recursion_limit": 15}
+        current_state = agent_app.get_state(config)
+        
+        if current_state.next:
+            if request.confirm_action or request.chat.strip().lower() in ["yes", "confirm", "approve", "proceed"]:
+                res = await agent_app.ainvoke(None, config=config)
+                return {
+                    "res": res["messages"][-1].content,
+                    "status": "completed",
+                    "user": current_user.username
+                }
+            else:
+                await agent_app.aupdate_state(config, {"messages": [HumanMessage(content="Action was cancelled by the user.")]})
+                return {
+                    "res": "The order placement was cancelled. How else can I assist you?",
+                    "status": "cancelled",
+                    "user": current_user.username
+                }
+
         input_state = {"messages": [HumanMessage(content=request.chat)], "user_id": request.thread_id}
         res = await agent_app.ainvoke(input_state, config=config)
-        return {"res": res["messages"][-1].content, "user": current_user.username}
+        
+        updated_state = agent_app.get_state(config)
+        if updated_state.next:
+            last_msg = updated_state.values["messages"][-1]
+            tool_call = last_msg.tool_calls[0] if getattr(last_msg, "tool_calls", None) else {}
+            args = tool_call.get("args", {})
+            product = args.get("product_name", "the requested item")
+            price = args.get("price", "")
+            price_text = f" for ₹{price}" if price else ""
+            
+            return {
+                "res": f"⚠️ Human Confirmation Required: Would you like to confirm and place your order for **{product}**{price_text}?",
+                "status": "waiting_approval",
+                "requires_confirmation": True,
+                "user": current_user.username
+            }
+
+        return {
+            "res": res["messages"][-1].content,
+            "status": "completed",
+            "user": current_user.username
+        }
     except Exception as e:
-        return {"res": f"Error: {str(e)}"}
+        return {"res": f"Error: {str(e)}", "status": "error"}
 
 @app.post("/token")
 async def login(from_data: Annotated[OAuth2PasswordRequestForm, Depends()]):

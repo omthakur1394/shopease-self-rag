@@ -42,20 +42,12 @@ async def rager_assistant(state: GraphState):
     
     system_instruction = (
         f"You are an expert AI shopping assistant for ShopEase.\n\n"
-        f"PRODUCT CATALOG (retrieved from knowledge base for this query):\n"
-        f"{context_text if context_text.strip() else '[NO RESULTS RETURNED FROM CATALOG SEARCH]'}\n\n"
-        f"--- MANDATORY ORDERING RULES ---\n"
-        f"1. DIRECT ORDER EXECUTION:\n"
-        f"   When the user asks to buy or confirms an order for a specific product (e.g., 'yes place the order', 'buy the VU TV', 'confirm', 'yes you can place the order'), YOU MUST IMMEDIATELY CALL `place_order_tool`.\n"
-        f"   DO NOT ask the user for delivery address, payment method, or extra confirmation details in chat.\n"
-        f"   NEVER claim that you cannot execute transactions. You HAVE full capability via `place_order_tool`.\n\n"
-        f"2. AMBIGUITY CHECK:\n"
-        f"   If multiple different models of the same brand exist (e.g., 50-inch vs 55-inch Kodak TV) and the user did not specify which one, ask them to clarify the exact size or model before placing the order.\n\n"
-        f"--- FALLBACK RULES ---\n"
-        f"- If items exist but don't match the user's request, plainly state that nothing fits right now.\n"
-        f"- If the catalog says '[NO RESULTS RETURNED]', say there was an issue retrieving the catalog and ask the user to rephrase.\n\n"
-        f"--- FORMATTING ---\n"
-        f"Never output URLs, links, or image markdown. Only output product name, key specs, and price as plain text.\n\n"
+        f"PRODUCT CATALOG:\n"
+        f"{context_text if context_text.strip() else '[NO RESULTS RETURNED]'}\n\n"
+        f"--- HUMAN-IN-THE-LOOP RULES ---\n"
+        f"1. When the user indicates they want to purchase an item, select and call `place_order_tool` with the exact product name and price.\n"
+        f"2. The system will automatically pause and ask the human for final approval before the order is placed.\n"
+        f"3. Never output markdown images or URLs. Output product name, specs, and price as plain text.\n\n"
         f"Active User Context ID: {state.get('user_id', 'Unknown')}"
     )
     
@@ -69,4 +61,8 @@ builder.add_node("tools", ToolNode(tools))
 builder.set_entry_point("assistant")
 builder.add_conditional_edges("assistant", tools_condition)
 builder.add_edge("tools", "assistant")
-agent_app = builder.compile(checkpointer=MemorySaver())
+
+agent_app = builder.compile(
+    checkpointer=MemorySaver(),
+    interrupt_before=["tools"]
+)
