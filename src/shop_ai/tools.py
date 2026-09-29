@@ -39,19 +39,19 @@ async def db_process_return(order_id: str) -> dict:
 async def db_get_order(order_id: str) -> dict:
     return await orders_collection.find_one({"order_id": order_id})
 
-@tool
+@tool(description="Use this tool to automatically create and execute a purchase order for the user.")
 async def place_order_tool(user_id: str, product_name: str, price: float) -> str:
     order = await db_create_order(user_id, product_name, price)
     return f"Order executed successfully. Order ID: {order['order_id']}, Item: {order['product_name']}, Price: {order['price']}, Status: {order['status']}."
 
-@tool
+@tool(description="Use this tool to process a return request for an order immediately.")
 async def return_order_tool(order_id: str) -> str:
     order = await db_process_return(order_id)
     if not order:
         return f"Failed to return. Order ID {order_id} not found."
     return f"Return processed successfully. Order ID: {order['order_id']}, Updated Status: {order['status']}."
 
-@tool
+@tool(description="Use this tool to look up tracking and detailed specifications for an existing order ID.")
 async def check_order_details_tool(order_id: str) -> str:
     order = await db_get_order(order_id)
     if not order:
