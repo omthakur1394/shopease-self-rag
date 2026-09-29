@@ -1,0 +1,22 @@
+from pydantic import BaseModel, Field
+from typing import List, Annotated, Sequence
+from langchain_core.documents import Document
+from langchain_core.messages import BaseMessage
+from langgraph.graph.message import add_messages
+
+def append_chat_history(left: List[str], right: List[str]) -> List[str]:
+    return left + right
+
+class ShopEaseRAGState(BaseModel):
+    messages: Annotated[Sequence[BaseMessage], add_messages] = Field(default_factory=list)
+    question: str = ""
+    search_query: str = ""
+    retrieved_docs: List[Document] = Field(default_factory=list)
+    answer: str = ""
+    reflection: str = ""
+    revised: bool = False
+    attempts: int = 0
+    order_id: str = ""
+    order_context: str = ""
+    hub_notes: str = ""
+    chat_history: Annotated[List[str], append_chat_history] = Field(default_factory=list)
