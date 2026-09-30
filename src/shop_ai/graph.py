@@ -3,7 +3,7 @@ from typing import Annotated, Sequence
 from typing_extensions import TypedDict
 from dotenv import load_dotenv
 from pymongo import MongoClient
-from langchain_core.messages import BaseMessage, SystemMessage
+from langchain_core.messages import BaseMessage, SystemMessage, ToolMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langgraph.graph import StateGraph
 from langgraph.graph.message import add_messages
@@ -69,7 +69,22 @@ async def rager_assistant(state: GraphState):
         f"Active User Context ID: {state.get('user_id', 'Unknown')}"
     )
     
-    updated_messages = [SystemMessage(content=system_instruction)] + messages
+    sanitized_messages = []
+    for i, msg in enumerate(messages):
+        sanitized_messages.append(msg)
+        if getattr(msg, "tool_calls", None):
+            existing_tool_ids = {
+                getattr(m, "tool_call_id", None) for m in messages[i+1:] if isinstance(m, ToolMessage)
+            }
+            for tc in msg.tool_calls:
+                tc_id = tc.get("id") or tc.get("tool_call_id")
+                if tc_id and tc_id not in existing_tool_ids:
+                    sanitized_messages.append(ToolMessage(
+                        tool_call_id=tc_id,
+                        content="Action cancelled by user."
+                    ))
+
+    updated_messages = [SystemMessage(content=system_instruction)] + sanitized_messages
     response = await llm_with_tools.ainvoke(updated_messages)
     return {"messages": [response]}
 

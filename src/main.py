@@ -3,7 +3,7 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from pydantic import BaseModel
 from typing import Annotated
 from fastapi.middleware.cors import CORSMiddleware
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import HumanMessage, ToolMessage
 from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
 from src.shop_ai.graph import agent_app
@@ -120,7 +120,20 @@ async def order(request: order_info, current_user: Annotated[TokenData, Depends(
                     "user": current_user.username
                 }
             elif is_cancel:
-                await agent_app.aupdate_state(config, {"messages": [HumanMessage(content="Action was cancelled by the user.")]})
+                last_msg = current_state.values["messages"][-1]
+                tool_messages = []
+                if getattr(last_msg, "tool_calls", None):
+                    for tc in last_msg.tool_calls:
+                        tc_id = tc.get("id")
+                        if tc_id:
+                            tool_messages.append(ToolMessage(
+                                tool_call_id=tc_id,
+                                content="Order cancelled by user."
+                            ))
+                if tool_messages:
+                    await agent_app.aupdate_state(config, {"messages": tool_messages})
+                else:
+                    await agent_app.aupdate_state(config, {"messages": [HumanMessage(content="Action was cancelled by the user.")]})
                 return {
                     "res": "The order placement was cancelled. How else can I assist you?",
                     "status": "cancelled",
