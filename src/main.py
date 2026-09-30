@@ -105,18 +105,38 @@ async def order(request: order_info, current_user: Annotated[TokenData, Depends(
         current_state = agent_app.get_state(config)
         
         if current_state.next:
-            if request.confirm_action or request.chat.strip().lower() in ["yes", "confirm", "approve", "proceed"]:
+            chat_text = request.chat.strip().lower()
+            cancel_keywords = ["cancel", "no", "stop", "abort", "don't", "dont", "deny", "reject", "nevermind"]
+            confirm_keywords = ["yes", "confirm", "approve", "proceed", "sure", "ok", "okay", "place", "buy", "go ahead", "do it", "yeah", "yep", "can"]
+            
+            is_cancel = any(w in chat_text for w in cancel_keywords)
+            is_confirm = request.confirm_action or any(w in chat_text for w in confirm_keywords)
+            
+            if is_confirm and not is_cancel:
                 res = await agent_app.ainvoke(None, config=config)
                 return {
                     "res": res["messages"][-1].content,
                     "status": "completed",
                     "user": current_user.username
                 }
-            else:
+            elif is_cancel:
                 await agent_app.aupdate_state(config, {"messages": [HumanMessage(content="Action was cancelled by the user.")]})
                 return {
                     "res": "The order placement was cancelled. How else can I assist you?",
                     "status": "cancelled",
+                    "user": current_user.username
+                }
+            else:
+                last_msg = current_state.values["messages"][-1]
+                tool_call = last_msg.tool_calls[0] if getattr(last_msg, "tool_calls", None) else {}
+                args = tool_call.get("args", {})
+                product = args.get("product_name", "the requested item")
+                price = args.get("price", "")
+                price_text = f" for ₹{price}" if price else ""
+                return {
+                    "res": f"Please confirm if you would like to place the order for **{product}**{price_text} (say 'yes' to confirm or 'cancel' to cancel).",
+                    "status": "waiting_approval",
+                    "requires_confirmation": True,
                     "user": current_user.username
                 }
 
