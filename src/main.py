@@ -65,7 +65,7 @@ async def chat(request: chat_bot, current_user: Annotated[TokenData, Depends(get
         order = await orders_collection.find_one({"order_id": request.order_id})
         if not order:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, 
+                status_code=status.HTTP_404_NOT_FOUND,
                 detail="Order not found. Please verify your Order ID."
             )
 
@@ -82,7 +82,7 @@ async def chat(request: chat_bot, current_user: Annotated[TokenData, Depends(get
 
         if is_mismatch:
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN, 
+                status_code=status.HTTP_403_FORBIDDEN,
                 detail="This order does not belong to your account."
             )
 
@@ -90,12 +90,14 @@ async def chat(request: chat_bot, current_user: Annotated[TokenData, Depends(get
         thread_id = request.thread_id if request.thread_id != "1" else (current_user.username or "1")
         config = {"configurable": {"thread_id": thread_id}, "recursion_limit": 15}
         res = await app_graph.ainvoke(
-            {"question": request.chat, "order_id": request.order_id}, 
+            {"question": request.chat, "order_id": request.order_id},
             config=config
         )
-        return {"res": res.get("answer", ""), "user": current_user.username}
+        docs = res.get("retrieved_docs") or []
+        contexts = [d.page_content if hasattr(d, "page_content") else str(d) for d in docs]
+        return {"res": res.get("answer", ""), "contexts": contexts, "user": current_user.username}
     except Exception as e:
-        return {"res": f"I am having trouble processing your request right now. Error: {str(e)}"}
+        return {"res": f"I am having trouble processing your request right now. Error: {str(e)}", "contexts": []}
 
 @app.post("/order")
 async def order(request: order_info, current_user: Annotated[TokenData, Depends(get_Current_User)]):
