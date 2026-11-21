@@ -72,7 +72,7 @@ class RecommendationCache:
             raw = await self.client.get(self.key_for(norm))
             if raw:
                 stats["hits"] += 1
-                print("[cache] HIT exact:", norm)
+                print("[cache] HIT exact")
                 return json.loads(raw)["answer"]
 
             members = await self.client.smembers(INDEX_KEY)
@@ -96,12 +96,12 @@ class RecommendationCache:
                         best_answer = entry["answer"]
                 if best_answer is not None and best_score >= SIM_THRESHOLD:
                     stats["hits"] += 1
-                    print(f"[cache] HIT semantic {best_score:.3f}:", norm)
+                    print(f"[cache] HIT semantic {best_score:.3f}")
                     return best_answer
         except Exception as e:
-            print("[cache get error]", e)
+            print("[cache get error]", type(e).__name__)
         stats["misses"] += 1
-        print("[cache] MISS:", norm)
+        print("[cache] MISS")
         return None
 
     async def set(self, query, answer):
@@ -116,7 +116,6 @@ class RecommendationCache:
                 return
             vec = await self.embed(norm)
             entry = {
-                "q": norm,
                 "answer": answer,
                 "emb": vec.tolist(),
                 "nums": self.numbers_of(norm),
@@ -125,4 +124,4 @@ class RecommendationCache:
             await self.client.set(key, json.dumps(entry), ex=TTL_SECONDS)
             await self.client.sadd(INDEX_KEY, key)
         except Exception as e:
-            print("[cache set error]", e)
+            print("[cache set error]", type(e).__name__)
