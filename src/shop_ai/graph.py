@@ -3,7 +3,7 @@ from typing import Annotated, Sequence
 from typing_extensions import TypedDict
 from dotenv import load_dotenv
 from pymongo import MongoClient
-from langchain_core.messages import BaseMessage, SystemMessage, ToolMessage
+from langchain_core.messages import BaseMessage, SystemMessage, ToolMessage, AIMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langgraph.graph import StateGraph
 from langgraph.graph.message import add_messages
@@ -12,6 +12,7 @@ from langgraph.checkpoint.mongodb import MongoDBSaver
 from src.shop_ai.config2 import llm
 from src.shop_ai.emdding import get_retiver
 from src.shop_ai.tools import place_order_tool, return_order_tool, check_order_details_tool
+from src.shop_ai.rec_cache import RecommendationCache
 
 load_dotenv()
 MONGO_URI = os.getenv("MONGO_URI")
@@ -21,12 +22,17 @@ if not MONGO_URI:
 mongo_client = MongoClient(MONGO_URI)
 checkpointer = MongoDBSaver(mongo_client, db_name="shopease_db")
 
+
 class GraphState(TypedDict):
     messages: Annotated[Sequence[BaseMessage], add_messages]
     user_id: str
 
+
 vectorstore = get_retiver()
 shopease_kb_retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
+cache_embeddings = getattr(vectorstore, "embeddings", None) or vectorstore._embedding_function
+rec_cache = RecommendationCache(cache_embeddings)
+
 tools = [place_order_tool, return_order_tool, check_order_details_tool]
 llm_with_tools = llm.bind_tools(tools)
 
@@ -37,20 +43,43 @@ rewrite_prompt = ChatPromptTemplate.from_messages([
 
 query_rewriter = rewrite_prompt | llm
 
+
 async def rager_assistant(state: GraphState):
     messages = list(state["messages"])
-    
-    user_query = next((m.content for m in reversed(messages) if m.type == "human"), "")
-    
+
+    user_query = ""
+    for m in reversed(messages):
+        if m.type == "human":
+            user_query = m.content
+            break
+
     if not user_query:
         return {"messages": []}
-        
+
+    human_count = 0
+    for m in messages:
+        if m.type == "human":
+            human_count += 1
+    cacheable = (
+        isinstance(user_query, str)
+        and human_count == 1
+        and messages[-1].type == "human"
+    )
+
+    if cacheable:
+        cached_answer = await rec_cache.get(user_query)
+        if cached_answer:
+            return {"messages": [AIMessage(content=cached_answer)]}
+
     rewrite_response = await query_rewriter.ainvoke({"query": user_query})
     search_query = rewrite_response.content.strip()
-    
+
     context_docs = await shopease_kb_retriever.ainvoke(search_query)
-    context_text = "\n\n".join([doc.page_content for doc in context_docs])
-    
+    context_parts = []
+    for doc in context_docs:
+        context_parts.append(doc.page_content)
+    context_text = "\n\n".join(context_parts)
+
     system_instruction = (
         f"You are an expert AI shopping assistant for ShopEase.\n\n"
         f"PRODUCT CATALOG (retrieved from knowledge base for this query):\n"
@@ -68,14 +97,15 @@ async def rager_assistant(state: GraphState):
         f"Never output URLs, links, or image markdown. Only output product name, key specs, and price as plain text.\n\n"
         f"Active User Context ID: {state.get('user_id', 'Unknown')}"
     )
-    
+
     sanitized_messages = []
     for i, msg in enumerate(messages):
         sanitized_messages.append(msg)
         if getattr(msg, "tool_calls", None):
-            existing_tool_ids = {
-                getattr(m, "tool_call_id", None) for m in messages[i+1:] if isinstance(m, ToolMessage)
-            }
+            existing_tool_ids = set()
+            for m in messages[i + 1:]:
+                if isinstance(m, ToolMessage):
+                    existing_tool_ids.add(getattr(m, "tool_call_id", None))
             for tc in msg.tool_calls:
                 tc_id = tc.get("id") or tc.get("tool_call_id")
                 if tc_id and tc_id not in existing_tool_ids:
@@ -86,7 +116,14 @@ async def rager_assistant(state: GraphState):
 
     updated_messages = [SystemMessage(content=system_instruction)] + sanitized_messages
     response = await llm_with_tools.ainvoke(updated_messages)
+
+    if cacheable and context_text.strip() and not getattr(response, "tool_calls", None):
+        answer_text = response.content
+        if isinstance(answer_text, str) and answer_text.strip():
+            await rec_cache.set(user_query, answer_text.strip())
+
     return {"messages": [response]}
+
 
 builder = StateGraph(GraphState)
 builder.add_node("assistant", rager_assistant)
