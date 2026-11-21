@@ -97,8 +97,7 @@ async def chat(request: chat_bot, current_user: Annotated[TokenData, Depends(get
         contexts = [d.page_content if hasattr(d, "page_content") else str(d) for d in docs]
         return {"res": res.get("answer", ""), "contexts": contexts, "user": current_user.username}
     except Exception as e:
-        return {"res": f"I am having trouble processing your request right now. Error: {str(e)}", "contexts": []}
-
+         raise HTTPException(status_code=500, detail=str(e))
 @app.post("/order")
 async def order(request: order_info, current_user: Annotated[TokenData, Depends(get_Current_User)]):
     try:
