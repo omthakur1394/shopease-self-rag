@@ -1,5 +1,7 @@
 import os
 import re
+import uuid
+from datetime import datetime, timezone
 from langchain_core.messages import AIMessage
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
@@ -16,10 +18,16 @@ if not MONGO_URI:
 client = AsyncIOMotorClient(MONGO_URI)
 db = client.shopease_db
 orders_collection = db.orders
+escalations_collection = db.escalations
 
 TOP_K = 5
 vectorstore = getvectory()
 shopease_kb_retriever = vectorstore.as_retriever(search_kwargs={"k": TOP_K})
+
+ESCALATION_PATTERN = re.compile(
+    r"\besc[a-z]*|support team|human agent|real person|speak to|talk to|supervisor|manager",
+    re.IGNORECASE,
+)
 
 
 class ReflectionOutput(BaseModel):
@@ -35,6 +43,33 @@ def docs_to_text(docs):
     return "\n\n".join(parts)
 
 
+def wants_escalation(text):
+    return bool(ESCALATION_PATTERN.search(text or ""))
+
+
+async def create_escalation(order_data):
+    try:
+        order_id = order_data.get("order_id")
+        existing = await escalations_collection.find_one({"order_id": order_id, "status": "open"})
+        if existing:
+            ticket_id = existing["ticket_id"]
+        else:
+            ticket_id = f"ESC-{uuid.uuid4().hex[:8].upper()}"
+            await escalations_collection.insert_one({
+                "ticket_id": ticket_id,
+                "order_id": order_id,
+                "user_id": order_data.get("user_id"),
+                "username": order_data.get("username"),
+                "reason": "customer requested escalation",
+                "status": "open",
+                "created_at": datetime.now(timezone.utc),
+            })
+        return f"Escalation Ticket: {ticket_id} is open for this order and has been sent to the support team for review."
+    except Exception as e:
+        print("[escalation error]", type(e).__name__)
+        return ""
+
+
 async def handle_support_ticket(state: ShopEaseRAGState):
     original_user_msg = state.question or ""
     order_id = state.order_id
@@ -45,6 +80,7 @@ async def handle_support_ticket(state: ShopEaseRAGState):
             order_id = match.group(1).upper()
 
     order_data = None
+    escalation_info = ""
     hub_notes_summary = "No active region issues."
 
     if order_id:
@@ -65,10 +101,19 @@ async def handle_support_ticket(state: ShopEaseRAGState):
         except Exception:
             hub_notes_summary = "Logistics data temporarily unavailable."
 
+    if order_data and wants_escalation(original_user_msg):
+        escalation_info = await create_escalation(order_data)
+
+    order_context = ""
+    if order_data:
+        order_context = str(order_data)
+        if escalation_info:
+            order_context = order_context + "\n" + escalation_info
+
     return {
         "question": original_user_msg,
         "order_id": order_id,
-        "order_context": str(order_data) if order_data else "",
+        "order_context": order_context,
         "hub_notes": hub_notes_summary,
         "chat_history": [f"User: {original_user_msg}"],
         "attempts": 0,
@@ -99,19 +144,20 @@ def generate_support_answer(state: ShopEaseRAGState):
         order_block = (
             f"Order Context:\n{state.order_context}\n\n"
             f"Hub Notes:\n{state.hub_notes}\n\n"
-            "When confirming an order inquiry, state the full Product Name and Amount Paid from Order Context.\n\n"
         )
 
     prompt = (
-        f"You are a Customer Support AI for ShopEase. Answer using ONLY the {sources_label}.\n\n"
+        f"You are a friendly Customer Support AI for ShopEase. Answer using ONLY the {sources_label}.\n\n"
         "RULES:\n"
-        "1. Answer only what the customer asked. Start with the direct answer in the first sentence.\n"
-        "2. Maximum 4 sentences. No greeting, no closing offer, no extra policies the customer did not ask about.\n"
-        "3. Copy numbers exactly as written in the context (days, amounts, percentages). Never guess a number.\n"
-        "4. If the context does not contain the answer, say: I do not have that information, please contact ShopEase support. Do not guess.\n"
-        "5. Do not invent weather delays, logistics excuses, status events, or wallet credits unless written in the context.\n"
-        "6. If the order is not marked Delivered, do not ask for photos of a delivered package.\n"
-        "7. Reply in the same language as the customer. Do not translate nouns like Order ID or ShopEase.\n\n"
+        "1. Start with the direct answer to what the customer asked, then add the relevant order details and the next step they should take.\n"
+        "2. When an Order Context is present, mention the full Product Name, the Amount Paid and the current status.\n"
+        "3. Be complete and helpful in about 3 to 6 sentences. Do not add policies the customer did not ask about.\n"
+        "4. Copy numbers exactly as written in the context (days, amounts, percentages). Never guess a number.\n"
+        "5. If the Order Context contains an Escalation Ticket line, confirm that the order has been escalated, quote the ticket number, and say the support team will review it. Never mention a ticket that is not in the Order Context.\n"
+        "6. If the context does not contain the answer, say what you could not find and suggest the customer use the Grievance Inbox or contact ShopEase support. Do not guess.\n"
+        "7. Do not invent weather delays, logistics excuses, status events, or wallet credits unless written in the context.\n"
+        "8. If the order is not marked Delivered, do not ask for photos of a delivered package.\n"
+        "9. Reply in the same language as the customer. Do not translate nouns like Order ID or ShopEase.\n\n"
         f"Policy Context:\n{context}\n\n"
         f"{order_block}"
         f"Chat History:\n{history_str}\n\n"
@@ -131,7 +177,7 @@ def reflect_on_policy_compliance(state: ShopEaseRAGState):
     try:
         context = docs_to_text(state.retrieved_docs)
         prompt = (
-            "Check this support answer against the Policy Context.\n"
+            "Check this support answer against the Policy Context and Order Context.\n"
             "Return is_compliant = True only if EVERY factual claim and number in the answer "
             "is supported by the Policy Context or Order Context, and the answer directly "
             "addresses the question. Return False if anything is invented or unsupported.\n\n"
