@@ -9,9 +9,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-REDIS_URL = os.getenv("REDIS_URL", "")
+REDIS_URL = os.getenv("REDIS_URL", "").strip()
 CACHE_ENABLED = os.getenv("REC_CACHE_ENABLED", "true").lower() == "true"
-SIM_THRESHOLD = float(os.getenv("REC_CACHE_THRESHOLD", "0.93"))
+SIM_THRESHOLD = float(os.getenv("REC_CACHE_THRESHOLD", "0.85"))
 TTL_SECONDS = int(os.getenv("REC_CACHE_TTL", "604800"))
 MAX_ENTRIES = int(os.getenv("REC_CACHE_MAX", "300"))
 PREFIX = "rec"
@@ -99,7 +99,7 @@ class RecommendationCache:
                     print(f"[cache] HIT semantic {best_score:.3f}")
                     return best_answer
         except Exception as e:
-            print("[cache get error]", type(e).__name__)
+            print("[cache get error]", e)
         stats["misses"] += 1
         print("[cache] MISS")
         return None
@@ -123,5 +123,6 @@ class RecommendationCache:
             key = self.key_for(norm)
             await self.client.set(key, json.dumps(entry), ex=TTL_SECONDS)
             await self.client.sadd(INDEX_KEY, key)
+            print("[cache] SAVED", key)
         except Exception as e:
-            print("[cache set error]", type(e).__name__)
+            print("[cache set error]", e)

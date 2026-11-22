@@ -9,7 +9,8 @@ from langgraph.graph import StateGraph
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode, tools_condition
 from langgraph.checkpoint.mongodb import MongoDBSaver
-from src.shop_ai.config2 import llm
+from langchain_huggingface import HuggingFaceEmbeddings
+from src.shop_ai.config2 import llm, EMBEDDING_MODEL2
 from src.shop_ai.emdding import get_retiver
 from src.shop_ai.tools import place_order_tool, return_order_tool, check_order_details_tool
 from src.shop_ai.rec_cache import RecommendationCache
@@ -30,8 +31,8 @@ class GraphState(TypedDict):
 
 vectorstore = get_retiver()
 shopease_kb_retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
-cache_embeddings = getattr(vectorstore, "embeddings", None) or vectorstore._embedding_function
-rec_cache = RecommendationCache(cache_embeddings)
+embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL2)
+rec_cache = RecommendationCache(embeddings)
 
 tools = [place_order_tool, return_order_tool, check_order_details_tool]
 llm_with_tools = llm.bind_tools(tools)
@@ -56,15 +57,7 @@ async def rager_assistant(state: GraphState):
     if not user_query:
         return {"messages": []}
 
-    human_count = 0
-    for m in messages:
-        if m.type == "human":
-            human_count += 1
-    cacheable = (
-        isinstance(user_query, str)
-        and human_count == 1
-        and messages[-1].type == "human"
-    )
+    cacheable = bool(isinstance(user_query, str) and user_query.strip() and messages[-1].type == "human")
 
     if cacheable:
         cached_answer = await rec_cache.get(user_query)
