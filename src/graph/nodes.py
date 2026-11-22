@@ -18,16 +18,25 @@ if not MONGO_URI:
 client = AsyncIOMotorClient(MONGO_URI)
 db = client.shopease_db
 orders_collection = db.orders
-escalations_collection = db.escalations
+tickets_collection = db.tickets
 
 TOP_K = 5
 vectorstore = getvectory()
 shopease_kb_retriever = vectorstore.as_retriever(search_kwargs={"k": TOP_K})
 
+ORDER_ID_PATTERN = re.compile(r"\b(ord-[a-z0-9]+)\b", re.IGNORECASE)
 ESCALATION_PATTERN = re.compile(
     r"\besc[a-z]*|support team|human agent|real person|speak to|talk to|supervisor|manager",
     re.IGNORECASE,
 )
+CLOSED_STATUSES = [
+    "Resolved",
+    "Refunded",
+    "Rejected",
+    "Replaced",
+    "Replacement Order Placed",
+    "Replacement Placed",
+]
 
 
 class ReflectionOutput(BaseModel):
@@ -47,24 +56,50 @@ def wants_escalation(text):
     return bool(ESCALATION_PATTERN.search(text or ""))
 
 
+def find_order_id(state, message):
+    if state.order_id:
+        return state.order_id
+    match = ORDER_ID_PATTERN.search(message or "")
+    if match:
+        return match.group(1).upper()
+    for line in reversed(state.chat_history):
+        match = ORDER_ID_PATTERN.search(line)
+        if match:
+            return match.group(1).upper()
+    return ""
+
+
 async def create_escalation(order_data):
     try:
         order_id = order_data.get("order_id")
-        existing = await escalations_collection.find_one({"order_id": order_id, "status": "open"})
+        existing = await tickets_collection.find_one({
+            "order_id": order_id,
+            "status": {"$nin": CLOSED_STATUSES},
+        })
         if existing:
-            ticket_id = existing["ticket_id"]
-        else:
-            ticket_id = f"ESC-{uuid.uuid4().hex[:8].upper()}"
-            await escalations_collection.insert_one({
-                "ticket_id": ticket_id,
-                "order_id": order_id,
-                "user_id": order_data.get("user_id"),
-                "username": order_data.get("username"),
-                "reason": "customer requested escalation",
-                "status": "open",
-                "created_at": datetime.now(timezone.utc),
-            })
-        return f"Escalation Ticket: {ticket_id} is open for this order and has been sent to the support team for review."
+            return "Escalation Status: this order is already with the support team for review at Level " + str(existing.get("escalation_level") or 1) + ". The customer can follow updates in the Grievance Inbox."
+
+        now = datetime.now(timezone.utc)
+        username = order_data.get("username") or order_data.get("user_id")
+        text = "Customer requested escalation of this order through the support chat."
+        await tickets_collection.insert_one({
+            "ticket_id": f"TKT-{uuid.uuid4().hex[:6].upper()}",
+            "order_id": order_id,
+            "username": username,
+            "customer": username,
+            "email": order_data.get("email"),
+            "product_name": order_data.get("product_name"),
+            "price": order_data.get("price"),
+            "chat_log": text,
+            "message": text,
+            "status": "Pending",
+            "escalation_level": 1,
+            "source": "support_chat",
+            "created_at": now,
+            "updated_at": now,
+        })
+        print("[escalation] ticket created")
+        return "Escalation Status: this order has been sent to the support team for review. The customer can follow updates in the Grievance Inbox."
     except Exception as e:
         print("[escalation error]", type(e).__name__)
         return ""
@@ -72,12 +107,7 @@ async def create_escalation(order_data):
 
 async def handle_support_ticket(state: ShopEaseRAGState):
     original_user_msg = state.question or ""
-    order_id = state.order_id
-
-    if not order_id:
-        match = re.search(r'\b(ord-[a-z0-9]+)\b', original_user_msg, re.IGNORECASE)
-        if match:
-            order_id = match.group(1).upper()
+    order_id = find_order_id(state, original_user_msg)
 
     order_data = None
     escalation_info = ""
@@ -153,7 +183,7 @@ def generate_support_answer(state: ShopEaseRAGState):
         "2. When an Order Context is present, mention the full Product Name, the Amount Paid and the current status.\n"
         "3. Be complete and helpful in about 3 to 6 sentences. Do not add policies the customer did not ask about.\n"
         "4. Copy numbers exactly as written in the context (days, amounts, percentages). Never guess a number.\n"
-        "5. If the Order Context contains an Escalation Ticket line, confirm that the order has been escalated, quote the ticket number, and say the support team will review it. Never mention a ticket that is not in the Order Context.\n"
+        "5. If the Order Context contains an Escalation Status line, tell the customer the order has been sent to the support team for review and that they can follow updates in the Grievance Inbox. Never mention a ticket number or reference number. If the customer asks for escalation and there is no Escalation Status line, say you could not send it and ask them to use the Grievance Inbox.\n"
         "6. If the context does not contain the answer, say what you could not find and suggest the customer use the Grievance Inbox or contact ShopEase support. Do not guess.\n"
         "7. Do not invent weather delays, logistics excuses, status events, or wallet credits unless written in the context.\n"
         "8. If the order is not marked Delivered, do not ask for photos of a delivered package.\n"
