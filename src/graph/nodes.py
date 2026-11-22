@@ -1,8 +1,9 @@
 import os
 import re
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from langchain_core.messages import AIMessage
+from langchain_core.runnables import RunnableConfig
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -19,14 +20,24 @@ client = AsyncIOMotorClient(MONGO_URI)
 db = client.shopease_db
 orders_collection = db.orders
 tickets_collection = db.tickets
+pending_collection = db.pending_escalations
 
 TOP_K = 5
+PENDING_MINUTES = 15
 vectorstore = getvectory()
 shopease_kb_retriever = vectorstore.as_retriever(search_kwargs={"k": TOP_K})
 
 ORDER_ID_PATTERN = re.compile(r"\b(ord-[a-z0-9]+)\b", re.IGNORECASE)
 ESCALATION_PATTERN = re.compile(
     r"\besc[a-z]*|support team|human agent|real person|speak to|talk to|supervisor|manager",
+    re.IGNORECASE,
+)
+YES_PATTERN = re.compile(
+    r"^\s*(yes|yeah|yep|y|ok|okay|sure|please do|go ahead|confirm|do it|haan|ha)\b",
+    re.IGNORECASE,
+)
+NO_PATTERN = re.compile(
+    r"^\s*(no|nope|cancel|dont|don't|not now|nahi|nevermind)\b",
     re.IGNORECASE,
 )
 CLOSED_STATUSES = [
@@ -56,6 +67,14 @@ def wants_escalation(text):
     return bool(ESCALATION_PATTERN.search(text or ""))
 
 
+def is_yes(text):
+    return bool(YES_PATTERN.search(text or ""))
+
+
+def is_no(text):
+    return bool(NO_PATTERN.search(text or ""))
+
+
 def find_order_id(state, message):
     if state.order_id:
         return state.order_id
@@ -69,6 +88,44 @@ def find_order_id(state, message):
     return ""
 
 
+def get_thread_id(config):
+    if not config:
+        return "default"
+    configurable = config.get("configurable") or {}
+    return str(configurable.get("thread_id") or "default")
+
+
+async def get_pending(thread_id):
+    try:
+        cutoff = datetime.now(timezone.utc) - timedelta(minutes=PENDING_MINUTES)
+        return await pending_collection.find_one({
+            "thread_id": thread_id,
+            "created_at": {"$gte": cutoff},
+        })
+    except Exception as e:
+        print("[pending get error]", type(e).__name__)
+        return None
+
+
+async def save_pending(thread_id, order_id):
+    try:
+        await pending_collection.delete_many({"thread_id": thread_id})
+        await pending_collection.insert_one({
+            "thread_id": thread_id,
+            "order_id": order_id,
+            "created_at": datetime.now(timezone.utc),
+        })
+    except Exception as e:
+        print("[pending save error]", type(e).__name__)
+
+
+async def clear_pending(thread_id):
+    try:
+        await pending_collection.delete_many({"thread_id": thread_id})
+    except Exception as e:
+        print("[pending clear error]", type(e).__name__)
+
+
 async def create_escalation(order_data):
     try:
         order_id = order_data.get("order_id")
@@ -77,7 +134,7 @@ async def create_escalation(order_data):
             "status": {"$nin": CLOSED_STATUSES},
         })
         if existing:
-            return "Escalation Status: this order is already with the support team for review at Level " + str(existing.get("escalation_level") or 1) + ". The customer can follow updates in the Grievance Inbox."
+            return "Escalation Status: this order is already with the support team for review. The customer can follow updates in the Grievance Inbox."
 
         now = datetime.now(timezone.utc)
         username = order_data.get("username") or order_data.get("user_id")
@@ -105,9 +162,14 @@ async def create_escalation(order_data):
         return ""
 
 
-async def handle_support_ticket(state: ShopEaseRAGState):
+async def handle_support_ticket(state: ShopEaseRAGState, config: RunnableConfig = None):
     original_user_msg = state.question or ""
+    thread_id = get_thread_id(config)
+    pending = await get_pending(thread_id)
+
     order_id = find_order_id(state, original_user_msg)
+    if pending and (is_yes(original_user_msg) or is_no(original_user_msg)):
+        order_id = pending.get("order_id") or order_id
 
     order_data = None
     escalation_info = ""
@@ -131,8 +193,16 @@ async def handle_support_ticket(state: ShopEaseRAGState):
         except Exception:
             hub_notes_summary = "Logistics data temporarily unavailable."
 
-    if order_data and wants_escalation(original_user_msg):
-        escalation_info = await create_escalation(order_data)
+    if order_data:
+        if pending and is_yes(original_user_msg):
+            escalation_info = await create_escalation(order_data)
+            await clear_pending(thread_id)
+        elif pending and is_no(original_user_msg):
+            await clear_pending(thread_id)
+            escalation_info = "Escalation Status: cancelled at the customer's request. Nothing was sent."
+        elif wants_escalation(original_user_msg):
+            await save_pending(thread_id, order_data.get("order_id"))
+            escalation_info = "Escalation Status: waiting for customer confirmation. Nothing has been sent yet. Ask the customer to reply yes if they want this order sent to the support team."
 
     order_context = ""
     if order_data:
@@ -183,8 +253,8 @@ def generate_support_answer(state: ShopEaseRAGState):
         "2. When an Order Context is present, mention the full Product Name, the Amount Paid and the current status.\n"
         "3. Be complete and helpful in about 3 to 6 sentences. Do not add policies the customer did not ask about.\n"
         "4. Copy numbers exactly as written in the context (days, amounts, percentages). Never guess a number.\n"
-        "5. If the Order Context contains an Escalation Status line, tell the customer the order has been sent to the support team for review and that they can follow updates in the Grievance Inbox. Never mention a ticket number or reference number. If the customer asks for escalation and there is no Escalation Status line, say you could not send it and ask them to use the Grievance Inbox.\n"
-        "6. If the context does not contain the answer, say what you could not find and suggest the customer use the Grievance Inbox or contact ShopEase support. Do not guess.\n"
+        "5. Escalation: if the Order Context has an Escalation Status line that says waiting for customer confirmation, ask the customer if they want the order sent to the support team and tell them to reply yes. Say clearly that nothing has been sent yet. If it says the order has been sent, tell the customer it has been sent to the support team and they can follow updates in the Grievance Inbox. If it says cancelled, confirm that nothing was sent. If there is no Escalation Status line, never claim anything was escalated or sent. Never mention a ticket number or reference number.\n"
+        "6. If the context does not contain the answer, say what you could not find and suggest the customer use the Grievance Inbox or contact ShopEase support. Do not guess. Do not promise email, SMS or notification updates.\n"
         "7. Do not invent weather delays, logistics excuses, status events, or wallet credits unless written in the context.\n"
         "8. If the order is not marked Delivered, do not ask for photos of a delivered package.\n"
         "9. Reply in the same language as the customer. Do not translate nouns like Order ID or ShopEase.\n\n"
