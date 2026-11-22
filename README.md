@@ -8,6 +8,9 @@ pinned: false
 app_port: 7860
 ---
 
+
+#
+- Evaluated the ShopEase self-reflecting RAG agent with RAGAS (25 queries, GPT-4o-mini judge): faithfulness 0.84 -> 0.91, answer relevancy 0.69 -> 0.83, context precision 0.79 -> 0.80, with 5.8s average end-to-end latency
 # ShopEase Self-Aware RAG Agent
 
 An autonomous, self-correcting RAG (Retrieval-Augmented Generation) customer support agent built for ShopEase. This system retrieves store policy documents, generates highly accurate answers, reflects on its own output, and rewrites queries if the initial response fails compliance checks.
