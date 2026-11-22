@@ -95,6 +95,13 @@ def get_thread_id(config):
     return str(configurable.get("thread_id") or "default")
 
 
+def get_username(config):
+    if not config:
+        return ""
+    configurable = config.get("configurable") or {}
+    return str(configurable.get("username") or "").strip().lower()
+
+
 async def get_pending(thread_id):
     try:
         cutoff = datetime.now(timezone.utc) - timedelta(minutes=PENDING_MINUTES)
@@ -165,6 +172,7 @@ async def create_escalation(order_data):
 async def handle_support_ticket(state: ShopEaseRAGState, config: RunnableConfig = None):
     original_user_msg = state.question or ""
     thread_id = get_thread_id(config)
+    username = get_username(config)
     pending = await get_pending(thread_id)
 
     order_id = find_order_id(state, original_user_msg)
@@ -173,25 +181,33 @@ async def handle_support_ticket(state: ShopEaseRAGState, config: RunnableConfig 
 
     order_data = None
     escalation_info = ""
-    hub_notes_summary = "No active region issues."
+    hub_notes_summary = ""
 
     if order_id:
         try:
-            order_data = await orders_collection.find_one({"order_id": order_id})
+            found = await orders_collection.find_one({"order_id": order_id})
+            if found:
+                owner_username = str(found.get("username") or "").strip().lower()
+                owner_user_id = str(found.get("user_id") or "").strip().lower()
+                if username and username in (owner_username, owner_user_id):
+                    order_data = found
+                    order_data.pop("_id", None)
             if order_data:
-                order_data.pop("_id", None)
                 recent_notes = await db.hub_notes.find({}).sort("created_at", -1).limit(5).to_list(length=5)
                 order_region = (order_data.get("hub_region") or order_data.get("shipping_address") or "").lower()
                 note_lines = []
                 for n in recent_notes:
                     note_text = n.get("note")
                     note_region = (n.get("region") or "").lower()
-                    if note_text and note_region in order_region:
+                    if note_text and note_region and note_region in order_region:
                         note_lines.append(f"{n.get('region')} Note: {note_text}")
                 if note_lines:
                     hub_notes_summary = "; ".join(note_lines)
         except Exception:
-            hub_notes_summary = "Logistics data temporarily unavailable."
+            hub_notes_summary = ""
+
+    if not order_data:
+        order_id = ""
 
     if order_data:
         if pending and is_yes(original_user_msg):
@@ -240,24 +256,26 @@ def generate_support_answer(state: ShopEaseRAGState):
     sources_label = "Policy Context"
     order_block = ""
     if state.order_context:
-        sources_label = "Policy Context, Order Context and Hub Notes"
-        order_block = (
-            f"Order Context:\n{state.order_context}\n\n"
-            f"Hub Notes:\n{state.hub_notes}\n\n"
-        )
+        sources_label = "Policy Context and Order Context"
+        order_block = f"Order Context:\n{state.order_context}\n\n"
+        if state.hub_notes:
+            sources_label = "Policy Context, Order Context and Hub Notes"
+            order_block += f"Hub Notes:\n{state.hub_notes}\n\n"
 
     prompt = (
         f"You are a friendly Customer Support AI for ShopEase. Answer using ONLY the {sources_label}.\n\n"
         "RULES:\n"
-        "1. Start with the direct answer to what the customer asked, then add the relevant order details and the next step they should take.\n"
-        "2. When an Order Context is present, mention the full Product Name, the Amount Paid and the current status.\n"
-        "3. Be complete and helpful in about 3 to 6 sentences. Do not add policies the customer did not ask about.\n"
-        "4. Copy numbers exactly as written in the context (days, amounts, percentages). Never guess a number.\n"
-        "5. Escalation: if the Order Context has an Escalation Status line that says waiting for customer confirmation, ask the customer if they want the order sent to the support team and tell them to reply yes. Say clearly that nothing has been sent yet. If it says the order has been sent, tell the customer it has been sent to the support team and they can follow updates in the Grievance Inbox. If it says cancelled, confirm that nothing was sent. If there is no Escalation Status line, never claim anything was escalated or sent. Never mention a ticket number or reference number.\n"
-        "6. If the context does not contain the answer, say what you could not find and suggest the customer use the Grievance Inbox or contact ShopEase support. Do not guess. Do not promise email, SMS or notification updates.\n"
-        "7. Do not invent weather delays, logistics excuses, status events, or wallet credits unless written in the context.\n"
-        "8. If the order is not marked Delivered, do not ask for photos of a delivered package.\n"
-        "9. Reply in the same language as the customer. Do not translate nouns like Order ID or ShopEase.\n\n"
+        "1. Start with the direct answer to what the customer asked in the first sentence.\n"
+        "2. Then explain the details that matter: the conditions, time limits, amounts, exceptions and eligibility that the context gives for this exact question.\n"
+        "3. Finish with the clear next step the customer should take, such as where to click or what to upload.\n"
+        "4. Write a complete, helpful answer of about 5 to 8 sentences. You may use short bullet points when there are several steps or conditions. Stay on the topic of the question and do not add unrelated policies.\n"
+        "5. When an Order Context is present, mention the full Product Name, the Amount Paid and the current status.\n"
+        "6. Copy numbers exactly as written in the context (days, amounts, percentages). Never guess a number.\n"
+        "7. Escalation: if the Order Context has an Escalation Status line that says waiting for customer confirmation, ask the customer if they want the order sent to the support team and tell them to reply yes. Say clearly that nothing has been sent yet. If it says the order has been sent, tell the customer it has been sent to the support team and they can follow updates in the Grievance Inbox. If it says cancelled, confirm that nothing was sent. If there is no Escalation Status line, never claim anything was escalated or sent. Never mention a ticket number or reference number.\n"
+        "8. If the context does not contain the answer, say what you could not find and suggest the customer use the Grievance Inbox or contact ShopEase support. Do not guess. Do not promise email, SMS or notification updates.\n"
+        "9. Do not invent weather delays, logistics excuses, status events, region issues or wallet credits unless written in the context.\n"
+        "10. If the order is not marked Delivered, do not ask for photos of a delivered package.\n"
+        "11. Reply in the same language as the customer. Do not translate nouns like Order ID or ShopEase.\n\n"
         f"Policy Context:\n{context}\n\n"
         f"{order_block}"
         f"Chat History:\n{history_str}\n\n"
