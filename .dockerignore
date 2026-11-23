@@ -1,6 +1,4 @@
 .git
-*.pdf
-.csv
 __pycache__/
 *.py[cod]
 *.pyo
@@ -11,7 +9,6 @@ venv/
 .venv/
 __pypackages__/
 *.env
-*.db
 *.log
 .DS_Store
 .idea/
@@ -21,5 +18,7 @@ dist/
 *.egg-info/
 pip-wheel-metadata/
 docker-compose.override.yml
-!chroma_db/
-!chroma_db/*.sqlite3
+chroma_db/
+chroma_db2/
+data/
+data2/

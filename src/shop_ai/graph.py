@@ -9,7 +9,7 @@ from langgraph.graph import StateGraph
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode, tools_condition
 from langgraph.checkpoint.mongodb import MongoDBSaver
-from langchain_huggingface import HuggingFaceEmbeddings
+from src.shop_ai.config2 import llm, embeddings2
 from src.shop_ai.config2 import llm, EMBEDDING_MODEL2
 from src.shop_ai.emdding import get_retiver
 from src.shop_ai.tools import place_order_tool, return_order_tool, check_order_details_tool
@@ -31,8 +31,7 @@ class GraphState(TypedDict):
 
 vectorstore = get_retiver()
 shopease_kb_retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
-embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL2)
-rec_cache = RecommendationCache(embeddings)
+rec_cache = RecommendationCache(embeddings2)
 
 tools = [place_order_tool, return_order_tool, check_order_details_tool]
 llm_with_tools = llm.bind_tools(tools)

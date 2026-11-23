@@ -14,8 +14,8 @@ CACHE_ENABLED = os.getenv("REC_CACHE_ENABLED", "true").lower() == "true"
 SIM_THRESHOLD = float(os.getenv("REC_CACHE_THRESHOLD", "0.85"))
 TTL_SECONDS = int(os.getenv("REC_CACHE_TTL", "604800"))
 MAX_ENTRIES = int(os.getenv("REC_CACHE_MAX", "300"))
-PREFIX = "rec"
-INDEX_KEY = "rec:index"
+PREFIX = "rec_v2"
+INDEX_KEY = "rec_v2:index"
 SKIP_WORDS = ["place order", "place the order", "confirm", "cancel", "return", "refund", "track", "ord-"]
 
 stats = {"hits": 0, "misses": 0}

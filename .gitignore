@@ -7,7 +7,6 @@ __pycache__/
 env/
 venv/
 .venv/
-.csv
 __pypackages__/
 *.env
 *.db
@@ -19,4 +18,16 @@ build/
 dist/
 *.egg-info/
 pip-wheel-metadata/
-*.pdf
+docker-compose.override.yml
+
+# Ignore heavy vector database & raw datasets
+chroma_db/
+chroma_db2/
+data/
+data2/
+
+# Explicitly keep evaluation CSV files
+!latency_before.csv
+!latency_after.csv
+!ragas_before.csv
+!ragas_after.csv

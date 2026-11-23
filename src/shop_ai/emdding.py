@@ -1,10 +1,11 @@
-from pathlib import Path
+import os
+from qdrant_client import QdrantClient
+from qdrant_client.http.models import Distance, VectorParams
+from langchain_qdrant import QdrantVectorStore
+from src.shop_ai.config2 import QDRANT_URL, QDRANT_API_KEY, COLLECTION_CSV, embeddings2, DIR2
 from langchain_community.document_loaders.csv_loader import CSVLoader
 from langchain_community.vectorstores.utils import filter_complex_metadata
-from langchain_huggingface import HuggingFaceEmbeddings
-from src.shop_ai.config2 import DIR2, EMBEDDING_MODEL2, Chroma_DB2
-from langchain_chroma import Chroma
-import os 
+
 
 def csv_fun():
     all_docs = []
@@ -22,31 +23,24 @@ def csv_fun():
         raise ValueError("csv not found")
     return filter_complex_metadata(all_docs)
 
-def get_retiver():
-    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL2)
-    db_path = Path(Chroma_DB2)
-    db_path.mkdir(parents=True, exist_ok=True)
 
-    if any(db_path.iterdir()):
-        return Chroma(
-            persist_directory=str(db_path),
-            embedding_function=embeddings
+def get_retiver():
+    client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
+
+    if not client.collection_exists(COLLECTION_CSV):
+        client.create_collection(
+            collection_name=COLLECTION_CSV,
+            vectors_config=VectorParams(size=1536, distance=Distance.COSINE),
         )
 
-    documents = csv_fun()
-    vectorstore = Chroma.from_documents(
-        documents=documents,
-        embedding=embeddings,
-        persist_directory=str(db_path)
+    vectorstore = QdrantVectorStore(
+        client=client,
+        collection_name=COLLECTION_CSV,
+        embedding=embeddings2,
     )
-    return vectorstore
 
-if __name__ == "__main__":
-    try:
-        vs = get_retiver()
-        if vs:
-            print("Chroma vectorstore initialized and persisted at:", Chroma_DB2)
-    except Exception as e:
-        import traceback
-        traceback.print_exc()
-        print("Embedding run failed:", str(e))
+    if client.count(COLLECTION_CSV).count == 0:
+        documents = csv_fun()
+        vectorstore.add_documents(documents)
+
+    return vectorstore 
