@@ -25,7 +25,7 @@ def csv_fun():
 
 
 def get_retiver():
-    client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
+    client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY, check_compatibility=False)
 
     if not client.collection_exists(COLLECTION_CSV):
         client.create_collection(

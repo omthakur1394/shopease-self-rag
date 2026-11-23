@@ -10,7 +10,7 @@ from src.shop_ai.graph import agent_app
 from src.graph.builder import app_graph 
 from src.auth.auth import SECRET_KEY, ALGORITHM, get_Current_User, TokenData
 from fastapi.security import OAuth2PasswordRequestForm
-from langfuse.callback import CallbackHandler
+from langfuse.langchain import CallbackHandler
 from jose import jwt
 import uvicorn 
 load_dotenv()

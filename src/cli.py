@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 from src.graph.state import ShopEaseRAGState
 from src.graph.builder import app_graph
-from langfuse.callback import CallbackHandler
+from langfuse.langchain import CallbackHandler
 
 load_dotenv()
 langfuse_handler = CallbackHandler()

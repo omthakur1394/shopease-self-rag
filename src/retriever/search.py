@@ -6,7 +6,7 @@ from src.retriever.ingest import load_doc
 
 
 def getvectory():
-    client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
+    client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY, check_compatibility=False)
 
     if not client.collection_exists(COLLECTION_PDF):
         client.create_collection(
