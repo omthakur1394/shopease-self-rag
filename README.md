@@ -1,4 +1,12 @@
-
+---
+title: ShopEase Self RAG
+emoji: 🛍️
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+pinned: false
+app_port: 7860
+---
 
 # 🛍️ ShopEase: Self-Reflecting & Autonomous RAG Intelligence Engine
 
