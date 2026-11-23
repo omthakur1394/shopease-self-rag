@@ -10,10 +10,11 @@ from src.shop_ai.graph import agent_app
 from src.graph.builder import app_graph 
 from src.auth.auth import SECRET_KEY, ALGORITHM, get_Current_User, TokenData
 from fastapi.security import OAuth2PasswordRequestForm
+from langfuse.callback import CallbackHandler
 from jose import jwt
 import uvicorn 
-
 load_dotenv()
+langfuse_handler = CallbackHandler()
 
 MONGO_URI = os.getenv("MONGO_URI")
 if not MONGO_URI:
@@ -88,7 +89,8 @@ async def chat(request: chat_bot, current_user: Annotated[TokenData, Depends(get
 
     try:
         thread_id = request.thread_id if request.thread_id != "1" else (current_user.username or "1")
-        config = {"configurable": {"thread_id": thread_id}, "recursion_limit": 15}
+        callbacks = [langfuse_handler] if langfuse_handler else []
+        config = {"configurable": {"thread_id": thread_id}, "recursion_limit": 15, "callbacks": callbacks}
         res = await app_graph.ainvoke(
             {"question": request.chat, "order_id": request.order_id},
             config=config
@@ -102,7 +104,8 @@ async def chat(request: chat_bot, current_user: Annotated[TokenData, Depends(get
 async def order(request: order_info, current_user: Annotated[TokenData, Depends(get_Current_User)]):
     try:
         thread_id = request.thread_id if request.thread_id != "1" else (current_user.username or "1")
-        config = {"configurable": {"thread_id": thread_id}, "recursion_limit": 15}
+        callbacks = [langfuse_handler] if langfuse_handler else []
+        config = {"configurable": {"thread_id": thread_id}, "recursion_limit": 15, "callbacks": callbacks}
         current_state = agent_app.get_state(config)
         
         if current_state.next:
