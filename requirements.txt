@@ -2,14 +2,11 @@ python-dotenv
 pydantic
 langchain-core
 langchain-groq
-langchain-chroma
-langchain-huggingface
 langchain-docling
 langchain-community
 langgraph
 langgraph-checkpoint-mongodb
 langchain-openai
-sentence-transformers
 fastapi
 uvicorn
 motor
